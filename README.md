@@ -1,36 +1,111 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DevNotify 🚀
 
-## Getting Started
+A GitHub tracker that notifies developers about issues from starred and trending repositories — so they stay updated and contribute faster.
 
-First, run the development server:
+## ✨ Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **GitHub Integration**: Connect your GitHub account and track starred repositories
+- **Notifications**: Receive real-time notifications about new issues via on telegram.
+- **Issue Tracking**: Monitor issues from your starred repositories
+- **Direct Contribution**: Reply to notification messages to comment on GitHub issues
+- **Repository Management**: View and manage all your repositories in one place
+- **User Dashboard**: Comprehensive dashboard with tabs for repositories, issues, and user info
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **Styling**: Tailwind CSS 4, Radix UI components
+- **Authentication**: NextAuth.js with GitHub OAuth
+- **Database**: PostgreSQL with Prisma ORM
+- **External APIs**: GitHub API
+- **Package Manager**: pnpm
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 Getting Started
 
-## Learn More
+### Prerequisites
 
-To learn more about Next.js, take a look at the following resources:
+- Node.js 18+
+- pnpm
+- PostgreSQL database
+- GitHub OAuth App
+- WhatsApp Business API credentials
+- Twilio account (for WhatsApp integration)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Installation
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Clone the repository**
 
-## Deploy on Vercel
+   ```bash
+   git clone <repository-url>
+   cd open-info
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. **Install dependencies**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   ```bash
+   pnpm install
+   ```
+
+3. **Set up environment variables**
+   Create a `.env.local` file in the root directory:
+
+   ```env
+   # Database
+   DATABASE_URL="postgresql://username:password@localhost:5432/devnotify"
+
+   # NextAuth
+   NEXTAUTH_URL="http://localhost:3000"
+   NEXTAUTH_SECRET="your-secret-key"
+
+   # GitHub OAuth
+   GITHUB_ID="your-github-oauth-app-id"
+   GITHUB_SECRET="your-github-oauth-app-secret"
+
+   # WhatsApp Business API
+   WHATSAPP_ACCESS_TOKEN="your-whatsapp-access-token"
+   WHATSAPP_PHONE_NUMBER_ID="your-whatsapp-phone-number-id"
+
+   # Twilio (for WhatsApp webhook)
+   TWILIO_ACCOUNT_SID="your-twilio-account-sid"
+   TWILIO_AUTH_TOKEN="your-twilio-auth-token"
+
+   # OpenAI (optional, for AI features)
+   OPENAI_API_KEY="your-openai-api-key"
+   ```
+
+4. **Set up the database**
+
+   ```bash
+   pnpm db:push
+   ```
+
+5. **Run the development server**
+
+   ```bash
+   pnpm dev
+   ```
+
+6. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+## 📱 How It Works
+
+### 1. Authentication
+
+- Users sign in with their GitHub account using NextAuth.js
+- The app requests necessary permissions to access starred repositories and create webhooks
+
+### 2. Repository Tracking
+
+- The app fetches your starred repositories from GitHub
+- For each repository, it creates a webhook to monitor new issues
+- If you don't have admin access to a repo, it forks the repository to set up webhooks
+
+### 3. Issue Monitoring
+
+- When new issues are created in tracked repositories, GitHub sends webhooks to the app
+- The app processes these webhooks and identifies users tracking those repositories
+
+---
+
+Made with ❤️ for the developer community

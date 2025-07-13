@@ -11,7 +11,7 @@ export default {
           scope: "read:user user:email repo public_repo admin:repo_hook",
         },
       },
-      allowDangerousEmailAccountLinking: true
+      allowDangerousEmailAccountLinking: true,
     }),
   ],
 } satisfies NextAuthConfig;

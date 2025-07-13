@@ -1,10 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { 
-  ArrowRight,
-  Github
-} from "lucide-react";
+import { ArrowRight, Github } from "lucide-react";
 import { Button } from "../ui/button";
 import { WordRotate } from "../magicui/word-rotate";
 import { cn } from "@/lib/utils";
@@ -12,7 +9,6 @@ import { AnimatedGradientText } from "../magicui/animated-gradient-text";
 import { signIn } from "next-auth/react";
 
 export const LandingPage = () => {
- 
   return (
     <main className="w-full min-h-scree">
       {/* Navbar */}
@@ -24,14 +20,15 @@ export const LandingPage = () => {
             </div>
             <Button
               variant="outline"
-              onClick={() => signIn(
-                "github",{
-                callbackUrl: "/app", 
-                redirect: true 
-              })}
+              onClick={() =>
+                signIn("github", {
+                  callbackUrl: "/app",
+                  redirect: true,
+                })
+              }
               className="shadow-lg bg-blue-700/90 hover:bg-blue-700/60 flex hover:shadow-xl transform hover:scale-105 cursor-pointer  transition-all duration-300"
             >
-              <Github/>
+              <Github />
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </div>
@@ -43,8 +40,8 @@ export const LandingPage = () => {
         <div className="max-w-6xl mx-auto text-center">
           <div className="flex justify-between items-center min-h-64">
             <div className="flex flex-col gap-2.5 justify-center items-start">
-             <AnimatedGradientText className="text-sm border p-2.5 rounded-xl font-medium">
-                  Developer Tools
+              <AnimatedGradientText className="text-sm border p-2.5 rounded-xl font-medium">
+                Developer Tools
               </AnimatedGradientText>
               <h1 className="text-6xl font-bold">Dev Notify</h1>
               <WordRotate
@@ -55,23 +52,24 @@ export const LandingPage = () => {
             </div>
             <div className="flex flex-col">
               <p className="text-left text-muted-foreground text-lg leading-relaxed max-w-md ml-auto mb-4">
-                  GitHub tracker that notifies developers on WhatsApp about issues from starred and trending repos — so they stay updated and contribute faster.
+                GitHub tracker that notifies developers about issues from
+                starred and trending repos — so they stay updated and contribute
+                faster.
               </p>
               <Button
-              className="cursor-pointer flex"
-               onClick={() => signIn(
-                "github",{
-                callbackUrl: "/app", 
-                redirect: true 
-              })}
+                className="cursor-pointer flex"
+                onClick={() =>
+                  signIn("github", {
+                    callbackUrl: "/app",
+                    redirect: true,
+                  })
+                }
               >
-                Sign Up With Github <Github/>
+                Sign Up With Github <Github />
               </Button>
             </div>
           </div>
-          <div>
-
-          </div>
+          <div></div>
         </div>
       </section>
 

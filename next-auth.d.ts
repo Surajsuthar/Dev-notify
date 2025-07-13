@@ -1,11 +1,12 @@
-import NextAuth , { User, type DefaultSession } from "next-auth";
+import NextAuth, { User, type DefaultSession } from "next-auth";
 declare module "next-auth" {
-    interface Session {
-      user : {
-        id: string
-        accessToken: string
-        githubId: string,
-        githubLogin: string
-      }
-    }
+  interface Session {
+    user: {
+      id: string;
+      email: string;
+      accessToken: string;
+      githubId: string;
+      githubLogin: string;
+    };
+  }
 }
