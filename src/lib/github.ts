@@ -12,7 +12,7 @@ export class GitHubService {
   async getStarredRepos() {
     const { data } =
       await this.octokit.activity.listReposStarredByAuthenticatedUser({
-        per_page: 100,
+        per_page: 200,
       });
     return data;
   }

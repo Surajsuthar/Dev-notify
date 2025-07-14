@@ -25,7 +25,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     async session({ session, token }) {
       if (session.user && token) {
-        console.log("token", token.userId);
         session.user.id = token.userId as string;
         session.user.accessToken = token.accessToken as string;
         session.user.githubId = token.githubId as string;

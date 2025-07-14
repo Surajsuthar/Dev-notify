@@ -10,8 +10,7 @@ import { signIn } from "next-auth/react";
 
 export const LandingPage = () => {
   return (
-    <main className="w-full min-h-scree">
-      {/* Navbar */}
+    <main className="w-full min-h-screen">
       <header className="fixed top-4 left-0 right-0 z-50">
         <div className="max-w-6xl mx-auto backdrop-blur-lg border shadow-xl rounded-xl py-2 px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-10 md:h-16">

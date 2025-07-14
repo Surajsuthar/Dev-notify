@@ -134,6 +134,96 @@ export const Issues = () => {
       comments: 31,
       reactions: 18,
     },
+    {
+      id: "7",
+      issueNumber: 3456,
+      repoName: "prisma",
+      repoOwner: "prisma",
+      title: "Improve query performance for large datasets",
+      body: "The query performance needs to be improved for datasets with more than 100k records...",
+      createdAt: new Date("2024-01-12"),
+      status: "open",
+      priority: "urgent",
+      labels: ["performance", "database", "optimization"],
+      assignees: ["julien", "harshit"],
+      comments: 31,
+      reactions: 18,
+    },
+    {
+      id: "8",
+      issueNumber: 3456,
+      repoName: "prisma",
+      repoOwner: "prisma",
+      title: "Improve query performance for large datasets",
+      body: "The query performance needs to be improved for datasets with more than 100k records...",
+      createdAt: new Date("2024-01-12"),
+      status: "open",
+      priority: "urgent",
+      labels: ["performance", "database", "optimization"],
+      assignees: ["julien", "harshit"],
+      comments: 31,
+      reactions: 18,
+    },
+    {
+      id: "9",
+      issueNumber: 3456,
+      repoName: "prisma",
+      repoOwner: "prisma",
+      title: "Improve query performance for large datasets",
+      body: "The query performance needs to be improved for datasets with more than 100k records...",
+      createdAt: new Date("2024-01-12"),
+      status: "open",
+      priority: "urgent",
+      labels: ["performance", "database", "optimization"],
+      assignees: ["julien", "harshit"],
+      comments: 31,
+      reactions: 18,
+    },
+    {
+      id: "10",
+      issueNumber: 3456,
+      repoName: "prisma",
+      repoOwner: "prisma",
+      title: "Improve query performance for large datasets",
+      body: "The query performance needs to be improved for datasets with more than 100k records...",
+      createdAt: new Date("2024-01-12"),
+      status: "open",
+      priority: "urgent",
+      labels: ["performance", "database", "optimization"],
+      assignees: ["julien", "harshit"],
+      comments: 31,
+      reactions: 18,
+    },
+    {
+      id: "11",
+      issueNumber: 3456,
+      repoName: "prisma",
+      repoOwner: "prisma",
+      title: "Improve query performance for large datasets",
+      body: "The query performance needs to be improved for datasets with more than 100k records...",
+      createdAt: new Date("2024-01-12"),
+      status: "open",
+      priority: "urgent",
+      labels: ["performance", "database", "optimization"],
+      assignees: ["julien", "harshit"],
+      comments: 31,
+      reactions: 18,
+    },
+    {
+      id: "12",
+      issueNumber: 3456,
+      repoName: "prisma",
+      repoOwner: "prisma",
+      title: "Improve query performance for large datasets",
+      body: "The query performance needs to be improved for datasets with more than 100k records...",
+      createdAt: new Date("2024-01-12"),
+      status: "open",
+      priority: "urgent",
+      labels: ["performance", "database", "optimization"],
+      assignees: ["julien", "harshit"],
+      comments: 31,
+      reactions: 18,
+    },
   ];
 
   const stats = useMemo(
@@ -205,11 +295,11 @@ export const Issues = () => {
   return (
     <div className="space-y-6">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {stats.map((stat) => (
           <StatCard key={stat.title} {...stat} color={stat.color} />
         ))}
-      </div>
+      </div> */}
 
       <Card>
         {/* <CardHeader>

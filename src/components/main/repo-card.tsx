@@ -5,7 +5,7 @@ import { CardFooter } from "../ui/card";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Star } from "lucide-react";
+import { ExternalLink, Link, Star } from "lucide-react";
 import { Label } from "../ui/label";
 import { CircleDot } from "lucide-react";
 import { Separator } from "../ui/separator";
@@ -13,66 +13,111 @@ import { Badge } from "../ui/badge";
 
 interface RepoCardProps {
   name: string;
-  description: string;
-  language: string[];
-  topics: string[];
-  link: string;
+  description: string | null;
+  language: string | null;
+  topics: string[] | null;
+  link: string | null;
   isForked: boolean;
-  issues: number;
+  issues: number | null;
   avatar_url: string;
+  stars: number | null;
 }
 
-export const RepoCard = () => {
+export const RepoCard = ({
+  name,
+  description,
+  language,
+  topics,
+  link,
+  issues,
+  avatar_url,
+  stars,
+}: RepoCardProps) => {
+  // Helper to get initials from repo name
+  const getInitials = (str: string) => {
+    return str
+      .split(" ")
+      .map((word) => word[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   return (
-    <Card className="w-full h-full p-4" onClick={() => {}}>
-      <CardHeader className="">
+    <Card className="w-full h-full p-4">
+      <CardHeader>
         <div className="flex flex-row gap-2 items-center justify-between">
           <div className="flex flex-row space-x-4 items-center">
             <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback>CN</AvatarFallback>
+              <AvatarImage src={avatar_url} />
+              <AvatarFallback>{getInitials(name)}</AvatarFallback>
             </Avatar>
-            <CardTitle>Open Source</CardTitle>
+            <CardTitle>{name}</CardTitle>
           </div>
         </div>
         <CardDescription>
-          Open Source software is software that is free to use, modify, and
-          distribute.
+          {description || (
+            <span className="text-muted-foreground">No description</span>
+          )}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-2">
-        <div className="flex flex-row gap-1 items-center justify-between">
-          <div className="flex items-center gap-1">
-            <Button variant={"outline"} className="text-sm bg-green-400/80">
+        <div className="flex flex-row gap-2 items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Button
+              variant={"outline"}
+              className="text-sm bg-green-400/80 flex items-center gap-1"
+              type="button"
+            >
               <CircleDot className="w-4 h-4" />
-              Issues
-              <p>100</p>
+              <span>Issues</span>
+              <span>{issues ?? 0}</span>
             </Button>
-            <Button variant={"outline"} className="text-sm bg-blue-400/80">
+            <Button
+              variant={"outline"}
+              className="text-sm bg-blue-400/80 flex items-center gap-1"
+              type="button"
+            >
               <Star className="w-4 h-4" />
-              Stars
-              <p>100</p>
+              <span>Stars</span>
+              <span>{stars ?? 0}</span>
             </Button>
           </div>
         </div>
-        <div className="flex flex-col gap-2 items-start">
+        <div className="flex gap-2 items-center">
           <Label className="text-sm font-medium">Language:</Label>
-          <div className="flex flex-wrap gap-1.5 items-center justify-start">
-            {[...Array(8)].map((_, index) => (
-              <Badge className="text-sm" variant={"secondary"} key={index}>
-                <p>Python</p>
-              </Badge>
-            ))}
+          <Badge className="text-sm" variant={"secondary"}>
+            <span>{language || "N/A"}</span>
+          </Badge>
+        </div>
+        <div className="flex flex-col gap-2 items-start">
+          <Label className="text-sm font-medium">Topics:</Label>
+          <div className="flex flex-wrap gap-1">
+            {topics && topics.length > 0 ? (
+              topics.map((topic) => (
+                <Badge key={topic} className="text-sm" variant={"secondary"}>
+                  <span>{topic}</span>
+                </Badge>
+              ))
+            ) : (
+              <span className="text-muted-foreground text-xs">No topics</span>
+            )}
           </div>
         </div>
       </CardContent>
       <CardFooter>
         <Button
-          variant={"outline"}
-          className="w-full bg-blue-500 hover:bg-blue-600 cursor-pointer"
-          onClick={() => {}}
+          variant={"default"}
+          className="w-full cursor-pointer flex items-center gap-2"
+          onClick={() => {
+            if (link) {
+              window.open(link, "_blank");
+            }
+          }}
+          type="button"
         >
-          <p>View on GitHub</p>
+          <span>View on GitHub</span>
+          <ExternalLink className="w-3 h-3" />
         </Button>
       </CardFooter>
     </Card>

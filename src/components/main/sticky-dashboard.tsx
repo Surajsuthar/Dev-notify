@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { AllRepo } from "./all-repo";
 import { Issues } from "./issues";
 import { UserInfo } from "./user-info";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "../ui/button";
 
 interface TabConfig {
   id: string;
@@ -15,34 +14,38 @@ interface TabConfig {
   component: React.ReactNode;
 }
 
-export const StickyDashboard = () => {
+export const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("issues");
 
-  const tabs: TabConfig[] = [
-    {
-      id: "issues",
-      label: "Issues",
-      title: "Tracked Issues",
-      description:
-        "Monitor issues from your starred repositories with real-time notifications",
-      component: <Issues />,
-    },
-    {
-      id: "repositories",
-      label: "Repositories",
-      title: "GitHub Repositories",
-      description:
-        "Manage and track your starred repositories and their issues",
-      component: <AllRepo />,
-    },
-    {
-      id: "user",
-      label: "User",
-      title: "User Profile",
-      description: "Manage your account settings and notification preferences",
-      component: <UserInfo />,
-    },
-  ];
+  const tabs: TabConfig[] = useMemo(
+    () => [
+      {
+        id: "issues",
+        label: "Issues",
+        title: "Tracked Issues",
+        description:
+          "Monitor issues from your starred repositories with real-time notifications",
+        component: <Issues />,
+      },
+      {
+        id: "repositories",
+        label: "Repositories",
+        title: "GitHub Repositories",
+        description:
+          "Manage and track your starred repositories and their issues",
+        component: <AllRepo />,
+      },
+      {
+        id: "user",
+        label: "User",
+        title: "User Profile",
+        description:
+          "Manage your account settings and notification preferences",
+        component: <UserInfo />,
+      },
+    ],
+    [],
+  );
 
   const currentTab = tabs.find((tab) => tab.id === activeTab) || tabs[0];
 

@@ -1,5 +1,5 @@
-import { StickyDashboard } from "@/components/main/sticky-dashboard";
+import { Dashboard } from "@/components/main/sticky-dashboard";
 
 export default async function Page() {
-  return <StickyDashboard />;
+  return <Dashboard />;
 }

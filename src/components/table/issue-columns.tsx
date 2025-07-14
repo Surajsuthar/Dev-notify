@@ -171,7 +171,7 @@ export const issueColumns: ColumnDef<Issue>[] = [
             variant="outline"
             size="sm"
             onClick={() => window.open(githubUrl, "_blank")}
-            className="h-8 w-8 p-0"
+            className="h-8 w-8 p-0 cursor-pointer"
           >
             <ExternalLink className="w-3 h-3" />
           </Button>
