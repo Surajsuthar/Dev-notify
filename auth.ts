@@ -2,24 +2,21 @@ import authConfig from "@/lib/auth.config";
 import { db } from "@/lib/prisma";
 import NextAuth from "next-auth";
 
-const MAX_COOKIE_AGE = 30 * 24 * 60 * 60;
+const MAX_COOKIE_AGE = 24 * 60 * 60;
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
   callbacks: {
     async jwt({ token, account, profile, user }) {
-      if (account && profile) {
+      if (account && profile && user) {
         token.accessToken = account.access_token;
         token.githubId = profile.id;
         token.githubLogin = profile.login;
         token.profile = profile;
-
-        if (user) {
-          token.userId = user.id;
-          token.userEmail = user.email;
-          token.userName = user.name;
-          token.userImage = user.image;
-        }
+        token.userId = user.id;
+        token.userEmail = user.email;
+        token.userName = user.name;
+        token.userImage = user.image;
       }
       return token;
     },
@@ -52,7 +49,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               githubId: account.providerAccountId,
             },
           });
-
           console.log("dbUser", dbUser);
         } catch (error) {
           console.error("Database error during sign in:", error);

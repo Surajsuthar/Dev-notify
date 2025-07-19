@@ -40,63 +40,13 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String     @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?    @unique
   image         String?
-  githubId      String?   @unique
+  githubId      String?    @unique
   whatsappNumber String?   @unique
   telegramUsername String? @unique
   accounts      Account[]
   sessions      Session[]
-  trackedIssues TrackedIssue[]
-  userRepos     UserRepos[]
-}
-
-model TrackedIssue {
-  id           String   @id @default(cuid())
-  issueNumber  Int
-  repoName     String
-  repoOwner    String
-  title        String
-  body         String?
-  userId       String
-  createdAt    DateTime @default(now())
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([issueNumber, repoName, repoOwner])
-}
-
-model UserRepos {
-  id            String @id @default(cuid())
-  user_id       String
-  is_forked     Boolean @default(false)
-  user          User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  allRepos      AllRepos? @relation(fields: [allReposId], references: [id])
-  allReposId    String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-}
-
-model AllRepos {
-  id            String @id @default(cuid())
-  node_id       String @unique
-  github_id     String @unique
-  name          String
-  owner         String
-  description   String?
-  full_name     String
-  html_url      String
-  topics        String[]
-  language      String[]
-  avatar_url    String?
-  homepage_url  String?
-  open_issues_count Int
-  is_forked     Boolean @default(false)
-  userRepos     UserRepos[]
-
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  @@unique([node_id, github_id]) 
 }

@@ -1,8 +1,7 @@
 import cron from "node-cron";
 import { db } from "./prisma";
 import { GitHubService } from "./github";
-import { WhatsAppService } from "./twilllio";
-import { AIService } from "./open-ai";
+import { auth } from "../../auth";
 
 export class IssueScheduler {
   static start() {

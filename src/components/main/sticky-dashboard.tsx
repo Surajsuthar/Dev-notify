@@ -5,6 +5,7 @@ import { AllRepo } from "./all-repo";
 import { Issues } from "./issues";
 import { UserInfo } from "./user-info";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MergeRequests } from "./merge-req";
 
 interface TabConfig {
   id: string;
@@ -23,24 +24,21 @@ export const Dashboard = () => {
         id: "issues",
         label: "Issues",
         title: "Tracked Issues",
-        description:
-          "Monitor issues from your starred repositories with real-time notifications",
+        description: "Monitor issues from your starred repositories",
         component: <Issues />,
       },
       {
         id: "repositories",
         label: "Repositories",
         title: "GitHub Repositories",
-        description:
-          "Manage and track your starred repositories and their issues",
+        description: "Track your starred repositories and their issues",
         component: <AllRepo />,
       },
       {
-        id: "user",
-        label: "User",
-        title: "User Profile",
-        description:
-          "Manage your account settings and notification preferences",
+        id: "merge-requests",
+        label: "Merge Requests",
+        title: "Merge Requests",
+        description: "Manage your merge requests",
         component: <UserInfo />,
       },
     ],

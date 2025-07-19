@@ -10,11 +10,20 @@ export class GitHubService {
   }
 
   async getStarredRepos() {
-    const { data } =
-      await this.octokit.activity.listReposStarredByAuthenticatedUser({
-        per_page: 200,
-      });
-    return data;
+    let allRepos: any[] = [];
+    let page = 1;
+    let fetched;
+    do {
+      const { data } =
+        await this.octokit.activity.listReposStarredByAuthenticatedUser({
+          per_page: 100,
+          page,
+        });
+      fetched = data.length;
+      allRepos = allRepos.concat(data);
+      page++;
+    } while (fetched === 100);
+    return allRepos;
   }
 
   async getIssues(owner: string, repo: string, since?: string) {

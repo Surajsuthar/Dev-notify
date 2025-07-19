@@ -4,7 +4,12 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { ExternalLink, Info } from "lucide-react";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "../ui/hover-card";
+import Link from "next/link";
 
 export type Repo = {
   id: string;
@@ -14,14 +19,15 @@ export type Repo = {
   topics: string[];
   link: string;
   issues: number;
-  avatar_url: string;
+  avatar_url: string | null;
   stars: number;
+  homepage_url: string | null;
 };
 
 export const repoColumns: ColumnDef<Repo>[] = [
   {
     accessorKey: "Sr. No.",
-    header: "Sr. No.",
+    header: "No.",
     cell: ({ row }) => {
       return (
         <div className="flex items-center gap-2 text-muted-foreground">
@@ -36,7 +42,12 @@ export const repoColumns: ColumnDef<Repo>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex items-center gap-2">
-          <span className="text-md font-medium">{row.original.name}</span>
+          <Link href={row.original.homepage_url || ""} target="_blank" className="hover:underline">
+            <span className="text-md font-medium">
+              {row.original.name.charAt(0).toUpperCase() +
+                row.original.name.slice(1)}
+            </span>
+          </Link>
         </div>
       );
     },
@@ -51,18 +62,19 @@ export const repoColumns: ColumnDef<Repo>[] = [
             {row.original.description && row.original.description.length > 40
               ? row.original.description.slice(0, 40)
               : row.original.description || "No description"}
-            {
-                row.original.description && row.original.description.length > 40 && (
-                    <HoverCard>
-                        <HoverCardTrigger>
-                            <Info className="w-3 h-3 text-muted-foreground cursor-pointer" />
-                        </HoverCardTrigger>
-                        <HoverCardContent>
-                            <span className="text-sm text-muted-foreground">{row.original.description}</span>
-                        </HoverCardContent>
-                    </HoverCard>
-                )
-            }
+            {row.original.description &&
+              row.original.description.length > 40 && (
+                <HoverCard>
+                  <HoverCardTrigger>
+                    <Info className="w-3 h-3 text-muted-foreground cursor-pointer" />
+                  </HoverCardTrigger>
+                  <HoverCardContent>
+                    <span className="text-sm text-muted-foreground">
+                      {row.original.description}
+                    </span>
+                  </HoverCardContent>
+                </HoverCard>
+              )}
           </span>
         </div>
       );
@@ -74,7 +86,9 @@ export const repoColumns: ColumnDef<Repo>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex items-center gap-2">
-          <span>{row.original.language}</span>
+          <span className="rounded-md bg-blue-400/80 px-2 py-1 text-xs font-medium">
+            {row.original.language ? row.original.language : "-"}
+          </span>
         </div>
       );
     },
@@ -117,7 +131,9 @@ export const repoColumns: ColumnDef<Repo>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex items-center gap-2">
-          <Badge variant={"default"} className="bg-green-400/80">{row.original.issues}</Badge>
+          <Badge variant={"default"} className="bg-green-400/80">
+            {row.original.issues}
+          </Badge>
         </div>
       );
     },
