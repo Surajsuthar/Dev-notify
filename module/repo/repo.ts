@@ -3,7 +3,8 @@
 import { GitHubService } from "@/lib/github";
 import { auth } from "../../auth";
 import { db } from "@/lib/prisma";
-import { Issue, Repo } from "@/types";
+import { Repo } from "@/types";
+import { Issue } from "./type";
 
 export const getAllWithGithub = async () => {
   try {
@@ -63,19 +64,6 @@ export const getUserRepos = async () => {
     };
   }
 
-  const userRepos = await db.userRepos.findMany({
-    where: {
-      user_id: session.user.id,
-    },
-    include: {
-      allRepos: true,
-    },
-  });
-
-  return {
-    success: true,
-    data: userRepos,
-  };
 };
 
 export const getUserIssue = async () => {
@@ -89,16 +77,43 @@ export const getUserIssue = async () => {
   }
   const githubClient = new GitHubService(session.user.accessToken as string);
   const allUserRepos = await getAllWithGithub()
-  if(allUserRepos.success && allUserRepos.data && allUserRepos.data?.length > 0) {
-    const issues: any[] = [];
-    allUserRepos?.data.forEach(async (repo) => {
-      const issuesData = await githubClient.getIssues(repo.owner, repo.name);
-      issuesData.forEach((issue) => {
-        issues.push(issue);
-      });
-    });
 
-    console.log("issues", issues);
+  if (allUserRepos.success && allUserRepos.data && allUserRepos.data.length > 0) {
+    const issues: Issue[] = [];
+    await Promise.all(
+      allUserRepos.data.map(async (repo) => {
+        const issuesData = await githubClient.getIssues(repo.owner, repo.name);
+        if (issuesData.length > 0) {
+          issuesData.forEach((issue) => {
+            if(Object.keys(issue?.pull_request || {}).length > 0) {
+              return;
+            }
+            issues.push({
+              id: issue.id,
+              title: issue.title,
+              issueNumber: issue.number,
+              issue_url: issue.html_url,
+              createdAt: issue.created_at,
+              created_by: issue.user?.login,
+              label: issue.labels.map((label) => {
+                if (typeof label === 'string') {
+                  return label;
+                }
+                return label.name || '';
+              }) || [],
+              state: issue.state as "open" | "closed",
+              comments: issue.comments,
+              body: issue.body || "",
+              reactions: issue.reactions?.total_count,
+              assignees: (issue.assignees?.length || 0) > 0,
+              owner: repo.owner,
+              language: repo.language,
+            });
+          });
+        }
+      })
+    );
+
     return {
       success: true,
       data: issues,

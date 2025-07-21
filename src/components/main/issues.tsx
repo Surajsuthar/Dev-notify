@@ -34,197 +34,29 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { StatCard } from "./stat-card";
+import { useQuery } from "@tanstack/react-query";
+import { getUserIssue } from "../../../module/repo/repo";
 
 export const Issues = () => {
   const [issues, setIssues] = useState<Issue[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [priorityFilter, setPriorityFilter] = useState("all");
+  const [labelFilter, setLabelFilter] = useState("all");
+  const [assigneeFilter, setAssigneeFilter] = useState(false);
 
+  const { data: userIssues, isLoading } = useQuery({
+    queryKey: ["userIssues"],
+    queryFn: () => getUserIssue(),
+  });
   // Mock data for demonstration
-  const mockIssues: Issue[] = [
-    {
-      id: "1",
-      issueNumber: 1234,
-      repoName: "next.js",
-      repoOwner: "vercel",
-      title: "Add support for React 19 concurrent features",
-      body: "This issue tracks the implementation of React 19 concurrent features...",
-      createdAt: new Date("2024-01-15"),
-      status: "open",
-      priority: "high",
-      labels: ["enhancement", "react", "concurrent"],
-      assignees: ["tim", "sophie"],
-      comments: 15,
-      reactions: 8,
-    },
-    {
-      id: "2",
-      issueNumber: 5678,
-      repoName: "typescript",
-      repoOwner: "microsoft",
-      title: "Fix type inference for generic constraints",
-      body: "The type inference is not working correctly for generic constraints...",
-      createdAt: new Date("2024-01-10"),
-      status: "open",
-      priority: "medium",
-      labels: ["bug", "types", "inference"],
-      assignees: ["andrew"],
-      comments: 8,
-      reactions: 3,
-    },
-    {
-      id: "3",
-      issueNumber: 9012,
-      repoName: "tailwindcss",
-      repoOwner: "tailwindlabs",
-      title: "Add new color palette for dark mode",
-      body: "We need to add a new color palette specifically designed for dark mode...",
-      createdAt: new Date("2024-01-08"),
-      status: "closed",
-      priority: "low",
-      labels: ["design", "dark-mode", "colors"],
-      assignees: ["adam"],
-      comments: 23,
-      reactions: 12,
-    },
-    {
-      id: "4",
-      issueNumber: 3456,
-      repoName: "prisma",
-      repoOwner: "prisma",
-      title: "Improve query performance for large datasets",
-      body: "The query performance needs to be improved for datasets with more than 100k records...",
-      createdAt: new Date("2024-01-12"),
-      status: "open",
-      priority: "urgent",
-      labels: ["performance", "database", "optimization"],
-      assignees: ["julien", "harshit"],
-      comments: 31,
-      reactions: 18,
-    },
-    {
-      id: "5",
-      issueNumber: 3456,
-      repoName: "prisma",
-      repoOwner: "prisma",
-      title: "Improve query performance for large datasets",
-      body: "The query performance needs to be improved for datasets with more than 100k records...",
-      createdAt: new Date("2024-01-12"),
-      status: "open",
-      priority: "urgent",
-      labels: ["performance", "database", "optimization"],
-      assignees: ["julien", "harshit"],
-      comments: 31,
-      reactions: 18,
-    },
-    {
-      id: "6",
-      issueNumber: 3456,
-      repoName: "prisma",
-      repoOwner: "prisma",
-      title: "Improve query performance for large datasets",
-      body: "The query performance needs to be improved for datasets with more than 100k records...",
-      createdAt: new Date("2024-01-12"),
-      status: "open",
-      priority: "urgent",
-      labels: ["performance", "database", "optimization"],
-      assignees: ["julien", "harshit"],
-      comments: 31,
-      reactions: 18,
-    },
-    {
-      id: "7",
-      issueNumber: 3456,
-      repoName: "prisma",
-      repoOwner: "prisma",
-      title: "Improve query performance for large datasets",
-      body: "The query performance needs to be improved for datasets with more than 100k records...",
-      createdAt: new Date("2024-01-12"),
-      status: "open",
-      priority: "urgent",
-      labels: ["performance", "database", "optimization"],
-      assignees: ["julien", "harshit"],
-      comments: 31,
-      reactions: 18,
-    },
-    {
-      id: "8",
-      issueNumber: 3456,
-      repoName: "prisma",
-      repoOwner: "prisma",
-      title: "Improve query performance for large datasets",
-      body: "The query performance needs to be improved for datasets with more than 100k records...",
-      createdAt: new Date("2024-01-12"),
-      status: "open",
-      priority: "urgent",
-      labels: ["performance", "database", "optimization"],
-      assignees: ["julien", "harshit"],
-      comments: 31,
-      reactions: 18,
-    },
-    {
-      id: "9",
-      issueNumber: 3456,
-      repoName: "prisma",
-      repoOwner: "prisma",
-      title: "Improve query performance for large datasets",
-      body: "The query performance needs to be improved for datasets with more than 100k records...",
-      createdAt: new Date("2024-01-12"),
-      status: "open",
-      priority: "urgent",
-      labels: ["performance", "database", "optimization"],
-      assignees: ["julien", "harshit"],
-      comments: 31,
-      reactions: 18,
-    },
-    {
-      id: "10",
-      issueNumber: 3456,
-      repoName: "prisma",
-      repoOwner: "prisma",
-      title: "Improve query performance for large datasets",
-      body: "The query performance needs to be improved for datasets with more than 100k records...",
-      createdAt: new Date("2024-01-12"),
-      status: "open",
-      priority: "urgent",
-      labels: ["performance", "database", "optimization"],
-      assignees: ["julien", "harshit"],
-      comments: 31,
-      reactions: 18,
-    },
-    {
-      id: "11",
-      issueNumber: 3456,
-      repoName: "prisma",
-      repoOwner: "prisma",
-      title: "Improve query performance for large datasets",
-      body: "The query performance needs to be improved for datasets with more than 100k records...",
-      createdAt: new Date("2024-01-12"),
-      status: "open",
-      priority: "urgent",
-      labels: ["performance", "database", "optimization"],
-      assignees: ["julien", "harshit"],
-      comments: 31,
-      reactions: 18,
-    },
-    {
-      id: "12",
-      issueNumber: 3456,
-      repoName: "prisma",
-      repoOwner: "prisma",
-      title: "Improve query performance for large datasets",
-      body: "The query performance needs to be improved for datasets with more than 100k records...",
-      createdAt: new Date("2024-01-12"),
-      status: "open",
-      priority: "urgent",
-      labels: ["performance", "database", "optimization"],
-      assignees: ["julien", "harshit"],
-      comments: 31,
-      reactions: 18,
-    },
-  ];
+  const mockIssues: Issue[] = userIssues?.data?.map((issue) => ({
+    ...issue,
+    labels: issue.label || [],
+    createdAt: new Date(issue.createdAt).toISOString(),
+    comments: issue.comments || 0,
+    reactions: issue.reactions || 0,
+    assignees: issue.assignees || false,
+  })) || [];
 
   const stats = useMemo(
     () => [
@@ -238,21 +70,21 @@ export const Issues = () => {
       {
         title: "Open Issues",
         Icon: Clock,
-        value: issues.filter((i) => i.status === "open").length,
+        value: issues.filter((i) => i.state === "open").length,
         description: "Need attention",
         color: "text-yellow-600",
       },
       {
         title: "Closed Issues",
         Icon: CheckCircle,
-        value: issues.filter((i) => i.status === "closed").length,
+        value: issues.filter((i) => i.state === "closed").length,
         description: "Resolved",
         color: "text-green-600",
       },
       {
         title: "Urgent Issues",
         Icon: TrendingUp,
-        value: issues.filter((i) => i.priority === "urgent").length,
+        // value: issues.filter((i) => i.state === "urgent").length,
         description: "High priority",
         color: "text-red-600",
       },
@@ -260,28 +92,30 @@ export const Issues = () => {
     [issues],
   );
 
-  useEffect(() => {
-    setTimeout(() => {
-      setIssues(mockIssues);
-      setLoading(false);
-    }, 1000);
-  }, []);
+  const labels = useMemo(() => {
+    return [...new Set(mockIssues.flatMap((issue) => issue.labels))];
+  }, [mockIssues]);
 
-  const filteredIssues = issues.filter((issue) => {
+  console.log("labels",mockIssues.map((issue) => issue.labels))
+
+  const filteredIssues = mockIssues.filter((issue) => {
     const matchesSearch =
       issue.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      issue.repoName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      issue.repoOwner.toLowerCase().includes(searchTerm.toLowerCase());
+      issue.owner.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus =
-      statusFilter === "all" || issue.status === statusFilter;
-    const matchesPriority =
-      priorityFilter === "all" || issue.priority === priorityFilter;
+      statusFilter === "all" || issue.state === statusFilter;
 
-    return matchesSearch && matchesStatus && matchesPriority;
+    const matchesLabel =
+      labelFilter === "all" || issue.labels.includes(labelFilter);
+
+    const matchesAssignee =
+      assigneeFilter === false || issue.assignees === true;
+
+    return matchesSearch && matchesStatus && matchesLabel && matchesAssignee;
   });
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="flex items-center gap-2">
@@ -327,7 +161,7 @@ export const Issues = () => {
 
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-full sm:w-48">
-                <SelectValue placeholder="Filter by status" />
+                <SelectValue placeholder="Filter by state" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Status</SelectItem>
@@ -337,16 +171,28 @@ export const Issues = () => {
               </SelectContent>
             </Select>
 
-            <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+            <Select value={labelFilter} onValueChange={setLabelFilter}>
               <SelectTrigger className="w-full sm:w-48">
-                <SelectValue placeholder="Filter by priority" />
+                <SelectValue placeholder="Filter by label" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Priority</SelectItem>
-                <SelectItem value="urgent">Urgent</SelectItem>
-                <SelectItem value="high">High</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="all">All Labels</SelectItem>
+                {labels.map((label) => (
+                  <SelectItem key={label} value={label}>
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={assigneeFilter ? "true" : "false"} onValueChange={(value) => setAssigneeFilter(value === "true")}>
+              <SelectTrigger className="w-full sm:w-48">
+                <SelectValue placeholder="Filter by assignees" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="true">Assigned</SelectItem>
+                <SelectItem value="false">Unassigned</SelectItem>
               </SelectContent>
             </Select>
 
@@ -355,7 +201,7 @@ export const Issues = () => {
               onClick={() => {
                 setSearchTerm("");
                 setStatusFilter("all");
-                setPriorityFilter("all");
+                setLabelFilter("all");
               }}
             >
               Clear Filters
@@ -385,8 +231,7 @@ export const Issues = () => {
               <h3 className="text-lg font-semibold mb-2">No issues found</h3>
               <p className="text-muted-foreground mb-4">
                 {searchTerm ||
-                statusFilter !== "all" ||
-                priorityFilter !== "all"
+                statusFilter !== "all"
                   ? "Try adjusting your filters or search terms"
                   : "Start by starring repositories to track their issues"}
               </p>

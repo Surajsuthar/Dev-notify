@@ -50,3 +50,18 @@ model User {
   accounts      Account[]
   sessions      Session[]
 }
+
+model Repo {
+  id            String @id @default(cuid())
+  node_id       String @unique
+  name          String
+  owner         String
+  description   String?
+  full_name     String
+  github_url    String
+  homepage_url  String?
+  stars         String
+  language      String?
+  topics        String[]
+  issues        String
+}

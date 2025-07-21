@@ -3,23 +3,24 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, MessageCircle, Calendar, GitBranch } from "lucide-react";
+import { ExternalLink, MessageCircle, Calendar, GitBranch, Info } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@radix-ui/react-hover-card";
 
 export type Issue = {
-  id: string;
-  issueNumber: number;
-  repoName: string;
-  repoOwner: string;
+  id: number;
+  issueNumber?: number;
+  owner: string;
   title: string;
   body?: string;
-  createdAt: Date;
-  status: "open" | "closed" | "draft";
-  priority: "low" | "medium" | "high" | "urgent";
+  createdAt: string;
+  state: "open" | "closed" ;
   labels: string[];
-  assignees: string[];
   comments: number;
+  issue_url: string;
   reactions: number;
+  assignees: boolean;
+  language?: string;
 };
 
 export const issueColumns: ColumnDef<Issue>[] = [
@@ -31,7 +32,7 @@ export const issueColumns: ColumnDef<Issue>[] = [
       return (
         <div className="flex items-center gap-2">
           <span className="font-mono text-sm text-muted-foreground">
-            #{issue.issueNumber}
+            #{issue.issueNumber || 0}
           </span>
         </div>
       );
@@ -44,11 +45,27 @@ export const issueColumns: ColumnDef<Issue>[] = [
       const issue = row.original;
       return (
         <div className="flex flex-col gap-1">
-          <div className="font-medium">{issue.title}</div>
+          <div className="font-medium flex items-center gap-1">
+            {issue.title && issue.title.length > 40
+              ? issue.title.slice(0, 40)
+              : issue.title}
+            {issue.title && issue.title.length > 40 && (
+              <HoverCard>
+                <HoverCardTrigger>
+                  <Info className="w-3 h-3 text-muted-foreground cursor-pointer" />
+                </HoverCardTrigger>
+                <HoverCardContent>
+                  <span className="text-sm text-muted-foreground">
+                    {issue.title}
+                  </span>
+                </HoverCardContent>
+              </HoverCard>
+            )}  
+          </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <GitBranch className="w-3 h-3" />
             <span>
-              {issue.repoOwner}/{issue.repoName}
+              {issue.owner}
             </span>
           </div>
         </div>
@@ -56,55 +73,34 @@ export const issueColumns: ColumnDef<Issue>[] = [
     },
   },
   {
-    accessorKey: "status",
+    accessorKey: "state",
     header: "Status",
     cell: ({ row }) => {
-      const status = row.getValue("status") as string;
-      const getStatusColor = (status: string) => {
-        switch (status) {
+      const state = row.getValue("state") as string;
+      const getstateColor = (state: string) => {
+        switch (state) {
           case "open":
-            return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
+            return "bg-green-500/20 text-green-500 font-bold dark:bg-green-900 dark:text-green-300";
           case "closed":
-            return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
-          case "draft":
-            return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
+            return "bg-gray-500/20 text-gray-500 font-bold dark:bg-gray-900 dark:text-gray-300";
           default:
             return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
         }
       };
 
       return (
-        <Badge className={getStatusColor(status)}>
-          {status.charAt(0).toUpperCase() + status.slice(1)}
+        <Badge className={getstateColor(state)}>
+          {state}
         </Badge>
       );
     },
   },
   {
-    accessorKey: "priority",
-    header: "Priority",
+    accessorKey: "language",
+    header: "Language",
     cell: ({ row }) => {
-      const priority = row.getValue("priority") as string;
-      const getPriorityColor = (priority: string) => {
-        switch (priority) {
-          case "urgent":
-            return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
-          case "high":
-            return "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300";
-          case "medium":
-            return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
-          case "low":
-            return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
-          default:
-            return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
-        }
-      };
-
-      return (
-        <Badge className={getPriorityColor(priority)}>
-          {priority.charAt(0).toUpperCase() + priority.slice(1)}
-        </Badge>
-      );
+      const language = row.getValue("language") as string;
+      return <Badge className={`rounded-md bg-blue-400/80 px-2 py-1 text-xs font-medium ${language ? "text-white" : "text-muted-foreground"}`}>{language ? language : "No language"}</Badge>;
     },
   },
   {
@@ -114,6 +110,7 @@ export const issueColumns: ColumnDef<Issue>[] = [
       const labels = row.getValue("labels") as string[];
       return (
         <div className="flex flex-wrap gap-1">
+          {labels.length === 0 && <Badge variant="outline" className="text-xs">No labels</Badge>}
           {labels.slice(0, 2).map((label, index) => (
             <Badge key={index} variant="secondary" className="text-xs">
               {label}
@@ -132,7 +129,7 @@ export const issueColumns: ColumnDef<Issue>[] = [
     accessorKey: "createdAt",
     header: "Created",
     cell: ({ row }) => {
-      const date = row.getValue("createdAt") as Date;
+      const date = row.getValue("createdAt") as string;
       return (
         <div className="flex items-center gap-1 text-sm text-muted-foreground">
           <Calendar className="w-3 h-3" />
@@ -151,9 +148,21 @@ export const issueColumns: ColumnDef<Issue>[] = [
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <MessageCircle className="w-3 h-3" />
           <span>{comments}</span>
-          {reactions > 0 && (
-            <span className="text-xs">+{reactions} reactions</span>
+          {(
+            <span className="text-xs">+{reactions ? reactions : 0} reactions</span>
           )}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "assignees",
+    header: "Assigned",
+    cell: ({ row }) => {
+      const assignees = row.getValue("assignees") as boolean;
+      return (
+        <div className="flex items-center justify-center gap-1 text-muted-foreground">
+          {assignees ? "Yes" : "No"}
         </div>
       );
     },
@@ -163,7 +172,7 @@ export const issueColumns: ColumnDef<Issue>[] = [
     header: "Actions",
     cell: ({ row }) => {
       const issue = row.original;
-      const githubUrl = `https://github.com/${issue.repoOwner}/${issue.repoName}/issues/${issue.issueNumber}`;
+      const githubUrl = issue.issue_url;
 
       return (
         <div className="flex items-center gap-2">

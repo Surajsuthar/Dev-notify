@@ -28,7 +28,7 @@ export const AllRepo = () => {
     queryKey: ["userRepos"],
     queryFn: () => getAllWithGithub(),
   });
-  console.log(userRepos);
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [languageFilter, setLanguageFilter] = useState("all");
 
