@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAllWithGithub, getUserRepos } from "../../../module/repo/repo";
+import { getAllWithGithub } from "../../../module/repo/repo";
 import { DataTable } from "../table/data-table";
 import { repoColumns } from "../table/repo-columns";
 import {

@@ -6,8 +6,8 @@ export type Repo = {
   owner:      string;
   description:string;
   full_name:  string;
-  html_url: string;
-  topics: string[];
+  html_url:   string;
+  topics:     string[];
   language: string[];
   avatar_url: string;
   homepage_url: string;

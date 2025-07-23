@@ -49,6 +49,19 @@ model User {
   telegramUsername String? @unique
   accounts      Account[]
   sessions      Session[]
+  userRepos     UserRepo[]
+}
+
+model UserRepo {
+  id        String @id @default(cuid())
+  userId    String
+  repoId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  repo Repo @relation(fields: [repoId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, repoId])
 }
 
 model Repo {
@@ -64,4 +77,5 @@ model Repo {
   language      String?
   topics        String[]
   issues        String
+  userRepos     UserRepo[]
 }

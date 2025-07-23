@@ -210,4 +210,9 @@ export class GitHubService {
       throw error;
     }
   }
+
+  async getRateLimit() {
+    const { data } = await this.octokit.rateLimit.get();
+    return data;
+  }
 }

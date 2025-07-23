@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, MessageCircle, Calendar, GitBranch, Info } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@radix-ui/react-hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 
 export type Issue = {
   id: number;
@@ -112,7 +112,7 @@ export const issueColumns: ColumnDef<Issue>[] = [
         <div className="flex flex-wrap gap-1">
           {labels.length === 0 && <Badge variant="outline" className="text-xs">No labels</Badge>}
           {labels.slice(0, 2).map((label, index) => (
-            <Badge key={index} variant="secondary" className="text-xs">
+            <Badge key={index} variant="secondary" className="text-xs bg-purple-500/20 text-purple-500">
               {label}
             </Badge>
           ))}

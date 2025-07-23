@@ -1,6 +1,11 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { 
+  useState, 
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
 import {
   Card,
   CardContent,
@@ -42,7 +47,7 @@ export const Issues = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [labelFilter, setLabelFilter] = useState("all");
-  const [assigneeFilter, setAssigneeFilter] = useState(false);
+  const [assigneeFilter, setAssigneeFilter] = useState("all");
 
   const { data: userIssues, isLoading } = useQuery({
     queryKey: ["userIssues"],
@@ -110,7 +115,7 @@ export const Issues = () => {
       labelFilter === "all" || issue.labels.includes(labelFilter);
 
     const matchesAssignee =
-      assigneeFilter === false || issue.assignees === true;
+      assigneeFilter === "all" || issue.assignees === (assigneeFilter === "true");
 
     return matchesSearch && matchesStatus && matchesLabel && matchesAssignee;
   });
@@ -185,7 +190,7 @@ export const Issues = () => {
               </SelectContent>
             </Select>
 
-            <Select value={assigneeFilter ? "true" : "false"} onValueChange={(value) => setAssigneeFilter(value === "true")}>
+            <Select value={assigneeFilter} onValueChange={(value) => setAssigneeFilter(value)}>
               <SelectTrigger className="w-full sm:w-48">
                 <SelectValue placeholder="Filter by assignees" />
               </SelectTrigger>
