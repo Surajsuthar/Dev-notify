@@ -1,7 +1,5 @@
 import cron from "node-cron";
 import { db } from "./prisma";
-import { GitHubService } from "./github";
-import { auth } from "../../auth";
 
 export class IssueScheduler {
   static start() {

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAllWithGithub } from "../../../module/repo/repo";
+import { getStarredReposForUser } from "../../../module/repo/repo";
 import { DataTable } from "../table/data-table";
 import { repoColumns } from "../table/repo-columns";
 import {
@@ -21,25 +21,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { RepoDataTableType } from "@/types";
 
 export const AllRepo = () => {
 
   const { data: userRepos, isLoading } = useQuery({
     queryKey: ["userRepos"],
-    queryFn: () => getAllWithGithub(),
+    queryFn: () => getStarredReposForUser(),
   });
   
   const [searchTerm, setSearchTerm] = useState("");
   const [languageFilter, setLanguageFilter] = useState("all");
 
-  const repos =
+  const repos: RepoDataTableType[] =
     userRepos?.data?.map((repo) => ({
       ...repo,
-      link: repo.html_url,
-      id: repo.github_id.toString(),
-      avatar_url: repo.avatar_url,
-      stars: repo.stars,
-      issues: repo.issues,
+      stars: Number(repo.stars),
+      homepage_url: repo.homepage_url || "",
+      issues: Number(repo.issues),
       topics: repo.topics || [],
       language: repo.language || "",
       description: repo.description || "",

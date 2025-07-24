@@ -5,7 +5,6 @@ A GitHub tracker that notifies developers about issues from starred and trending
 ## ✨ Features
 
 - **GitHub Integration**: Connect your GitHub account and track starred repositories
-- **Notifications**: Receive real-time notifications about new issues via on telegram.
 - **Issue Tracking**: Monitor issues from your starred repositories
 - **Direct Contribution**: Reply to notification messages to comment on GitHub issues
 - **Repository Management**: View and manage all your repositories in one place
@@ -28,8 +27,7 @@ A GitHub tracker that notifies developers about issues from starred and trending
 - pnpm
 - PostgreSQL database
 - GitHub OAuth App
-- WhatsApp Business API credentials
-- Twilio account (for WhatsApp integration)
+
 
 ### Installation
 
@@ -47,7 +45,7 @@ A GitHub tracker that notifies developers about issues from starred and trending
    ```
 
 3. **Set up environment variables**
-   Create a `.env.local` file in the root directory:
+   Create a `.env` file in the root directory:
 
    ```env
    # Database
@@ -61,16 +59,6 @@ A GitHub tracker that notifies developers about issues from starred and trending
    GITHUB_ID="your-github-oauth-app-id"
    GITHUB_SECRET="your-github-oauth-app-secret"
 
-   # WhatsApp Business API
-   WHATSAPP_ACCESS_TOKEN="your-whatsapp-access-token"
-   WHATSAPP_PHONE_NUMBER_ID="your-whatsapp-phone-number-id"
-
-   # Twilio (for WhatsApp webhook)
-   TWILIO_ACCOUNT_SID="your-twilio-account-sid"
-   TWILIO_AUTH_TOKEN="your-twilio-auth-token"
-
-   # OpenAI (optional, for AI features)
-   OPENAI_API_KEY="your-openai-api-key"
    ```
 
 4. **Set up the database**

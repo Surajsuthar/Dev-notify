@@ -3,11 +3,10 @@
 import { GitHubService } from "@/lib/github";
 import { auth } from "../../auth";
 import { db } from "@/lib/prisma";
-import { Repo } from "@/types";
-import { Issue } from "./type";
+import { IssueDataTableType, Repo } from "@/types";
+import { Issue } from "@/types";
 import { getUser } from "../user/user";
 import { cache as reactCache } from "react";
-
 
 export const getGithubService = reactCache(async () => {
   try {
@@ -22,7 +21,7 @@ export const getGithubService = reactCache(async () => {
   }
 })
 
-export const getAllWithGithub = reactCache(async () => {
+export const getAllStarredReposFromGithub = reactCache(async () => {
   try {
     const session = await auth();
     if (!session?.user) {
@@ -54,14 +53,12 @@ export const getAllWithGithub = reactCache(async () => {
       owner: repo.owner.login,
       description: repo.description,
       full_name: repo.full_name,
-      html_url: repo.html_url,
+      github_url: repo.html_url,
       topics: repo.topics,
       language: repo.language || "",
-      avatar_url: repo.owner.avatar_url,
       homepage_url: repo.homepage,
       stars: repo.stargazers_count,
       issues: repo.open_issues_count,
-      is_forked: repo.fork,
     }));
 
     const uniqueRepos = Array.from(new Map(userRepos.map(r => [r.node_id, r])).values());
@@ -77,7 +74,7 @@ export const getAllWithGithub = reactCache(async () => {
               owner: repo.owner,
               description: repo.description,
               full_name: repo.full_name,
-              github_url: repo.html_url,
+              github_url: repo.github_url,
               stars: String(repo.stars),
               issues: String(repo.issues),
               language: repo.language,
@@ -90,7 +87,7 @@ export const getAllWithGithub = reactCache(async () => {
               owner: repo.owner,
               description: repo.description,
               full_name: repo.full_name,
-              github_url: repo.html_url,
+              github_url: repo.github_url,
               stars: String(repo.stars),
               issues: String(repo.issues),
               language: repo.language,
@@ -119,12 +116,6 @@ export const getAllWithGithub = reactCache(async () => {
       })
     );
 
-    // Optional: Fetch synced data from DB
-    const syncedRepos = await db.userRepo.findMany({
-      where: { userId: user?.id! },
-      include: { repo: true },
-    });
-
     return {
       success: true,
       data: userRepos,
@@ -139,8 +130,7 @@ export const getAllWithGithub = reactCache(async () => {
   }
 });
 
-
-export const getUserRepos = reactCache(async () => {
+export const getStarredReposForUser = reactCache(async () => {
   const session = await auth();
 
   if (!session?.user) {
@@ -154,11 +144,21 @@ export const getUserRepos = reactCache(async () => {
 
   const userRepos = await db.userRepo.findMany({
     where: { userId: user?.id! },
+    include: {
+      repo: true,
+    },
   });
 
+  return {
+    success: true,
+    data: userRepos.map((userRepo) => ({
+      ...userRepo.repo,
+      issues: userRepo.repo.issues,
+    })),
+  }
 });
 
-export const getUserIssue = reactCache(async () => {
+export const getAllIssuesFromGithub = reactCache(async () => {
   const session = await auth();
 
   if (!session?.user) {
@@ -167,43 +167,65 @@ export const getUserIssue = reactCache(async () => {
       message: "User not found",
     };
   }
+
   const githubClient = await getGithubService();
-  const allUserRepos = await getAllWithGithub()
+  if (!githubClient) {
+    return {
+      success: false,
+      message: "Github client not found",
+    };
+  }
+
+  const allUserRepos = await getStarredReposForUser();
 
   if (allUserRepos.success && allUserRepos.data && allUserRepos.data.length > 0) {
     const issues: Issue[] = [];
     await Promise.all(
       allUserRepos.data.map(async (repo) => {
-        if (!githubClient) {
-          return;
-        }
         const issuesData = await githubClient.getIssues(repo.owner, repo.name);
         if (issuesData.length > 0) {
-          issuesData.forEach((issue) => {
+          issuesData.forEach(async (issue) => {
             if(Object.keys(issue?.pull_request || {}).length > 0) {
               return;
             }
-            issues.push({
-              id: issue.id,
-              title: issue.title,
-              issueNumber: issue.number,
-              issue_url: issue.html_url,
-              createdAt: issue.created_at,
-              created_by: issue.user?.login,
-              label: issue.labels.map((label) => {
-                if (typeof label === 'string') {
-                  return label;
-                }
-                return label.name || '';
-              }) || [],
-              state: issue.state as "open" | "closed",
-              comments: issue.comments,
-              body: issue.body || "",
-              reactions: issue.reactions?.total_count,
-              assignees: (issue.assignees?.length || 0) > 0,
-              owner: repo.owner,
-              language: repo.language,
-            });
+            await db.issueTracker.upsert({
+              where: {
+                issueNumber_repoId: {
+                  issueNumber: String(issue.number),
+                  repoId: repo.id,
+                },
+              },
+              update: {
+                title: issue.title,
+                label: issue.labels.map((label) => {
+                  if (typeof label === 'string') {
+                    return label;
+                  }
+                  return label.name || '';
+                }) || [],
+                state: issue.state as "open" | "closed",
+                comments: issue.comments,
+                reactions: issue.reactions?.total_count || 0,
+              },
+              create: {
+                issueNumber: String(issue.number),
+                repoId: repo.id,
+                title: issue.title,
+                issue_url: issue.html_url,
+                createdAt: issue.created_at,
+                createdBy: issue.user?.login || "",
+                label: issue.labels.map((label) => {
+                  if (typeof label === 'string') {
+                    return label;
+                  }
+                  return label.name || '';
+                }) || [],
+                state: issue.state as "open" | "closed",
+                comments: issue.comments,
+                reactions: issue.reactions?.total_count || 0,
+                assigned: (issue.assignees?.length || 0) > 0,
+              },
+            })
           });
         }
       })
@@ -219,4 +241,53 @@ export const getUserIssue = reactCache(async () => {
     success: false,
     message: "No repositories found",
   };
+});
+
+export const getRepoIssuesForUser = reactCache(async () => {
+  const session = await auth();
+
+  if (!session?.user) {
+    return {
+      success: false,
+      message: "User not found",
+    };
+  }
+
+  const user = await getUser(session.user.email);
+
+  const userRepos = await db.userRepo.findMany({
+    where: {
+      userId: user?.id!,
+    },
+    include: {
+      repo: {
+        include: {
+          issueTracker: true,
+        }
+      },
+    },
+  });
+
+  const issues: IssueDataTableType[] = userRepos.flatMap((userRepo) => {
+    return userRepo.repo.issueTracker.map((issue) => {
+      return {
+        ...issue,
+        owner: userRepo.repo.owner,
+        language: userRepo.repo.language || ""  ,
+        createdAt: issue.createdAt.toISOString(),
+        labels: issue.label,
+        assignees: issue.assigned,
+        comments: issue.comments,
+        reactions: issue.reactions,
+        issueNumber: Number(issue.issueNumber),
+        issue_url: issue.issue_url,
+        state: issue.state as "open" | "closed",
+      }
+    })
+  })
+
+  return {
+    success: true,
+    data: issues,
+  }
 });

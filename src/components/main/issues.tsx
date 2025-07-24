@@ -3,8 +3,6 @@
 import { 
   useState, 
   useMemo,
-  useCallback,
-  useRef,
 } from "react";
 import {
   Card,
@@ -23,27 +21,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DataTable } from "@/components/table/data-table";
-import { issueColumns, type Issue } from "@/components/table/issue-columns";
+import { issueColumns } from "@/components/table/issue-columns";
 import {
   Search,
-  Filter,
   RefreshCw,
   AlertCircle,
   CheckCircle,
   Clock,
   TrendingUp,
-  MessageCircle,
   GitBranch,
-  ExternalLink,
 } from "lucide-react";
 import { StatCard } from "./stat-card";
 import { useQuery } from "@tanstack/react-query";
-import { getUserIssue } from "../../../module/repo/repo";
+import { getRepoIssuesForUser } from "../../../module/repo/repo";
+import { IssueDataTableType } from "@/types";
 
 export const Issues = () => {
-  const [issues, setIssues] = useState<Issue[]>([]);
+  const [issues, setIssues] = useState<IssueDataTableType[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [labelFilter, setLabelFilter] = useState("all");
@@ -51,12 +46,12 @@ export const Issues = () => {
 
   const { data: userIssues, isLoading } = useQuery({
     queryKey: ["userIssues"],
-    queryFn: () => getUserIssue(),
+    queryFn: () => getRepoIssuesForUser(),
   });
-  // Mock data for demonstration
-  const mockIssues: Issue[] = userIssues?.data?.map((issue) => ({
+ 
+  const mockIssues: IssueDataTableType[] = userIssues?.data?.map((issue) => ({
     ...issue,
-    labels: issue.label || [],
+    labels: issue.labels || [],
     createdAt: new Date(issue.createdAt).toISOString(),
     comments: issue.comments || 0,
     reactions: issue.reactions || 0,
@@ -101,8 +96,6 @@ export const Issues = () => {
     return [...new Set(mockIssues.flatMap((issue) => issue.labels))];
   }, [mockIssues]);
 
-  console.log("labels",mockIssues.map((issue) => issue.labels))
-
   const filteredIssues = mockIssues.filter((issue) => {
     const matchesSearch =
       issue.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -112,7 +105,7 @@ export const Issues = () => {
       statusFilter === "all" || issue.state === statusFilter;
 
     const matchesLabel =
-      labelFilter === "all" || issue.labels.includes(labelFilter);
+      labelFilter === "all" || issue.labels?.includes(labelFilter);
 
     const matchesAssignee =
       assigneeFilter === "all" || issue.assignees === (assigneeFilter === "true");
@@ -183,7 +176,7 @@ export const Issues = () => {
               <SelectContent>
                 <SelectItem value="all">All Labels</SelectItem>
                 {labels.map((label) => (
-                  <SelectItem key={label} value={label}>
+                  <SelectItem key={label} value={label as string}>
                     {label}
                   </SelectItem>
                 ))}

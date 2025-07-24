@@ -10,21 +10,9 @@ import {
   HoverCardTrigger,
 } from "../ui/hover-card";
 import Link from "next/link";
+import { RepoDataTableType } from "@/types";
 
-export type Repo = {
-  id: string;
-  name: string;
-  description: string;
-  language: string;
-  topics: string[];
-  link: string;
-  issues: number;
-  avatar_url: string | null;
-  stars: number;
-  homepage_url: string | null;
-};
-
-export const repoColumns: ColumnDef<Repo>[] = [
+export const repoColumns: ColumnDef<RepoDataTableType>[] = [
   {
     accessorKey: "Sr. No.",
     header: "No.",
@@ -153,7 +141,7 @@ export const repoColumns: ColumnDef<Repo>[] = [
     accessorKey: "link",
     header: "Link",
     cell: ({ row }) => {
-      const link = row.getValue("link") as string;
+      const link = row.original.github_url;
       return (
         <div className="flex items-center gap-2">
           <Button

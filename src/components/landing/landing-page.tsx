@@ -51,9 +51,7 @@ export const LandingPage = () => {
             </div>
             <div className="flex flex-col">
               <p className="text-left text-muted-foreground text-lg leading-relaxed max-w-md ml-auto mb-4">
-                GitHub tracker that notifies developers about issues from
-                starred and trending repos — so they stay updated and contribute
-                faster.
+                DevNotify is a platform that allows you to track your starred repositories and issues.
               </p>
               <Button
                 className="cursor-pointer flex"

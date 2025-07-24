@@ -2,7 +2,6 @@ import { NextRequest } from "next/server";
 import { auth } from "../../../../auth";
 import { db } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { getUserIssue } from "../../../../module/repo/repo";
 import { GitHubService } from "@/lib/github";
 
 export async function GET(req: NextRequest) {
@@ -24,10 +23,9 @@ export async function GET(req: NextRequest) {
     //   return NextResponse.json({ error: 'GitHub token not found' }, { status: 400 })
     // }
     const githubClient = new GitHubService(session.user.accessToken as string);
-    const starredRepos = await githubClient.getStarredRepos();
-    const { data: issues } = await getUserIssue();
-    
-    return NextResponse.json({ issues });
+    const rateLimit = await githubClient.getRateLimit();
+  
+    return NextResponse.json({ rateLimit });
   } catch (error) {
     console.error("Error fetching starred repos:", error);
     return NextResponse.json(

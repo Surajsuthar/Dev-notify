@@ -6,24 +6,9 @@ import { Button } from "@/components/ui/button";
 import { ExternalLink, MessageCircle, Calendar, GitBranch, Info } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { IssueDataTableType } from "@/types";
 
-export type Issue = {
-  id: number;
-  issueNumber?: number;
-  owner: string;
-  title: string;
-  body?: string;
-  createdAt: string;
-  state: "open" | "closed" ;
-  labels: string[];
-  comments: number;
-  issue_url: string;
-  reactions: number;
-  assignees: boolean;
-  language?: string;
-};
-
-export const issueColumns: ColumnDef<Issue>[] = [
+export const issueColumns: ColumnDef<IssueDataTableType>[] = [
   {
     accessorKey: "issueNumber",
     header: "#",
@@ -168,7 +153,7 @@ export const issueColumns: ColumnDef<Issue>[] = [
     },
   },
   {
-    id: "actions",
+    accessorKey: "actions",
     header: "Actions",
     cell: ({ row }) => {
       const issue = row.original;
