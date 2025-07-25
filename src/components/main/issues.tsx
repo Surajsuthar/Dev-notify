@@ -1,9 +1,6 @@
 "use client";
 
-import { 
-  useState, 
-  useMemo,
-} from "react";
+import { useState, useMemo } from "react";
 import {
   Card,
   CardContent,
@@ -31,6 +28,7 @@ import {
   Clock,
   TrendingUp,
   GitBranch,
+  Filter,
 } from "lucide-react";
 import { StatCard } from "./stat-card";
 import { useQuery } from "@tanstack/react-query";
@@ -48,15 +46,16 @@ export const Issues = () => {
     queryKey: ["userIssues"],
     queryFn: () => getRepoIssuesForUser(),
   });
- 
-  const mockIssues: IssueDataTableType[] = userIssues?.data?.map((issue) => ({
-    ...issue,
-    labels: issue.labels || [],
-    createdAt: new Date(issue.createdAt).toISOString(),
-    comments: issue.comments || 0,
-    reactions: issue.reactions || 0,
-    assignees: issue.assignees || false,
-  })) || [];
+
+  const mockIssues: IssueDataTableType[] =
+    userIssues?.data?.map((issue) => ({
+      ...issue,
+      labels: issue.labels || [],
+      createdAt: new Date(issue.createdAt).toISOString(),
+      comments: issue.comments || 0,
+      reactions: issue.reactions || 0,
+      assignees: issue.assignees || false,
+    })) || [];
 
   const stats = useMemo(
     () => [
@@ -96,19 +95,24 @@ export const Issues = () => {
     return [...new Set(mockIssues.flatMap((issue) => issue.labels))];
   }, [mockIssues]);
 
+  const language = useMemo(() => {
+    return [...new Set(mockIssues.map((issues) => issues.language))];
+  }, [mockIssues]);
+
   const filteredIssues = mockIssues.filter((issue) => {
     const matchesSearch =
       issue.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       issue.owner.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus =
-      statusFilter === "all" || issue.state === statusFilter;
+      statusFilter === "all" || issue.language === statusFilter;
 
     const matchesLabel =
       labelFilter === "all" || issue.labels?.includes(labelFilter);
 
     const matchesAssignee =
-      assigneeFilter === "all" || issue.assignees === (assigneeFilter === "true");
+      assigneeFilter === "all" ||
+      issue.assignees === (assigneeFilter === "true");
 
     return matchesSearch && matchesStatus && matchesLabel && matchesAssignee;
   });
@@ -133,44 +137,37 @@ export const Issues = () => {
         ))}
       </div> */}
 
-      <Card>
-        {/* <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Filter className="w-4 h-4" />
-            Filters & Search
-          </CardTitle>
-          <CardDescription>
-            Filter and search through your tracked issues
-          </CardDescription>
-        </CardHeader> */}
-        <CardContent>
+      <Card className="rounded-none">
+        <CardContent className="">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                <Search className="absolute  left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 <Input
                   placeholder="Search issues, repos, or owners..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 rounded-none"
                 />
               </div>
             </div>
 
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full sm:w-48">
+              <SelectTrigger className="w-full rounded-none sm:w-48">
                 <SelectValue placeholder="Filter by state" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="open">Open</SelectItem>
-                <SelectItem value="closed">Closed</SelectItem>
-                <SelectItem value="draft">Draft</SelectItem>
+                <SelectItem value="all">All Language</SelectItem>
+                {language?.map((lang) => (
+                  <SelectItem key={lang} value={lang as string}>
+                    {lang}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
 
             <Select value={labelFilter} onValueChange={setLabelFilter}>
-              <SelectTrigger className="w-full sm:w-48">
+              <SelectTrigger className="w-full rounded-none sm:w-48">
                 <SelectValue placeholder="Filter by label" />
               </SelectTrigger>
               <SelectContent>
@@ -183,8 +180,11 @@ export const Issues = () => {
               </SelectContent>
             </Select>
 
-            <Select value={assigneeFilter} onValueChange={(value) => setAssigneeFilter(value)}>
-              <SelectTrigger className="w-full sm:w-48">
+            <Select
+              value={assigneeFilter}
+              onValueChange={(value) => setAssigneeFilter(value)}
+            >
+              <SelectTrigger className="w-full rounded-none sm:w-48">
                 <SelectValue placeholder="Filter by assignees" />
               </SelectTrigger>
               <SelectContent>
@@ -209,7 +209,7 @@ export const Issues = () => {
       </Card>
 
       {/* Issues Table */}
-      <Card>
+      <Card className=" rounded-none">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>Tracked Issues</span>
@@ -228,8 +228,7 @@ export const Issues = () => {
               <AlertCircle className="w-12 h-12 text-muted-foreground mb-4" />
               <h3 className="text-lg font-semibold mb-2">No issues found</h3>
               <p className="text-muted-foreground mb-4">
-                {searchTerm ||
-                statusFilter !== "all"
+                {searchTerm || statusFilter !== "all"
                   ? "Try adjusting your filters or search terms"
                   : "Start by starring repositories to track their issues"}
               </p>

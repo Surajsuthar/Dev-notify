@@ -3,6 +3,7 @@ import { auth } from "../../../../auth";
 import { db } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { GitHubService } from "@/lib/github";
+import { IssueScheduler } from "@/lib/schedular";
 
 export async function GET(req: NextRequest) {
   const session = await auth();
@@ -24,7 +25,7 @@ export async function GET(req: NextRequest) {
     // }
     const githubClient = new GitHubService(session.user.accessToken as string);
     const rateLimit = await githubClient.getRateLimit();
-  
+    await IssueScheduler.checkForNewIssues();
     return NextResponse.json({ rateLimit });
   } catch (error) {
     console.error("Error fetching starred repos:", error);

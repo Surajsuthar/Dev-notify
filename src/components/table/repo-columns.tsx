@@ -30,7 +30,11 @@ export const repoColumns: ColumnDef<RepoDataTableType>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex items-center gap-2">
-          <Link href={row.original.homepage_url || ""} target="_blank" className="hover:underline">
+          <Link
+            href={row.original.homepage_url || ""}
+            target="_blank"
+            className="hover:underline"
+          >
             <span className="text-md font-medium">
               {row.original.name.charAt(0).toUpperCase() +
                 row.original.name.slice(1)}

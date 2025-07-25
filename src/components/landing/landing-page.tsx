@@ -1,60 +1,62 @@
 "use client";
 
 import React, { useState } from "react";
-import { ArrowRight, Github } from "lucide-react";
+import { Github } from "lucide-react";
 import { Button } from "../ui/button";
 import { WordRotate } from "../magicui/word-rotate";
-import { cn } from "@/lib/utils";
 import { AnimatedGradientText } from "../magicui/animated-gradient-text";
 import { signIn } from "next-auth/react";
+import Image from "next/image";
+import Link from "next/link";
+import { useGithub } from "@/hooks/use-github-count";
 
 export const LandingPage = () => {
+  const { stargazers_count } = useGithub();
+
   return (
-    <main className="w-full min-h-screen">
-      <header className="fixed top-4 left-0 right-0 z-50">
-        <div className="max-w-6xl mx-auto backdrop-blur-lg border shadow-xl rounded-xl py-2 px-4 sm:px-6 lg:px-8">
+    <main className="w-full max-w-[1100px] mx-auto min-h-screen">
+      <header className="fixed top-4 left-4 right-4 sm:left-0 sm:right-0 z-50">
+        <div className="max-w-6xl mx-auto backdrop-blur-lg border shadow-xl rounded-none py-2 px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-10 md:h-16">
             <div className="flex space-x-3 items-center">
-              <span className="text-2xl font-bold bg-clip-text">DevNotify</span>
+              <span className="text-xl sm:text-2xl font-bold bg-clip-text">
+                DevNotify
+              </span>
             </div>
             <Button
               variant="outline"
-              onClick={() =>
-                signIn("github", {
-                  callbackUrl: "/app",
-                  redirect: true,
-                })
-              }
-              className="shadow-lg bg-blue-700/90 hover:bg-blue-700/60 flex hover:shadow-xl transform hover:scale-105 cursor-pointer  transition-all duration-300"
+              className="shadow-lg bg-blue-700/90 hover:bg-blue-700/60 flex hover:shadow-xl transform hover:scale-105 cursor-pointer transition-all duration-300 text-xs sm:text-sm"
             >
-              <Github />
-              <ArrowRight className="w-4 h-4 ml-2" />
+              <Github className="w-4 h-4" />
+              {stargazers_count}
             </Button>
           </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6">
+      <section className="pt-24 sm:pt-32 pb-20 px-2 sm:px-6">
         <div className="max-w-6xl mx-auto text-center">
-          <div className="flex justify-between items-center min-h-64">
-            <div className="flex flex-col gap-2.5 justify-center items-start">
-              <AnimatedGradientText className="text-sm border p-2.5 rounded-xl font-medium">
-                Developer Tools
+          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center min-h-64 gap-8 lg:gap-0">
+            <div className="flex flex-col gap-2.5 justify-center items-center lg:items-start text-center lg:text-left">
+              <AnimatedGradientText className="text-xs sm:text-sm border p-2.5 rounded-xl font-medium">
+                Hello, contributor
               </AnimatedGradientText>
-              <h1 className="text-6xl font-bold">Dev Notify</h1>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold">
+                Dev Notify
+              </h1>
               <WordRotate
                 duration={1700}
-                className="text-4xl font-bold"
+                className="text-2xl sm:text-3xl lg:text-4xl font-bold"
                 words={["Track.", "Notify.", "Contribute."]}
               />
             </div>
-            <div className="flex flex-col">
-              <p className="text-left text-muted-foreground text-lg leading-relaxed max-w-md ml-auto mb-4">
-                DevNotify is a platform that allows you to track your starred repositories and issues.
+            <div className="flex flex-col items-center lg:items-start">
+              <p className="text-center lg:text-left text-muted-foreground text-base sm:text-lg leading-relaxed max-w-md mx-auto lg:ml-auto mb-4">
+                DevNotify is a platform that allows you to track your starred
+                repositories and issues.
               </p>
               <Button
-                className="cursor-pointer flex"
+                className="cursor-pointer flex gap-2 w-full sm:w-auto"
                 onClick={() =>
                   signIn("github", {
                     callbackUrl: "/app",
@@ -62,7 +64,9 @@ export const LandingPage = () => {
                   })
                 }
               >
-                Sign Up With Github <Github />
+                <span className="hidden sm:inline">Sign Up With Github</span>
+                <span className="sm:hidden">Sign Up</span>
+                <Github className="w-4 h-4" />
               </Button>
             </div>
           </div>
@@ -70,88 +74,60 @@ export const LandingPage = () => {
         </div>
       </section>
 
-      {/* Features Section */}
-      {/* <section id="features" className="py-20 px-6 bg-gray-900">
+      <section className="py-8 sm:py-8 px-2 sm:px-6">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">
-              Why Choose Us?
-            </h2>
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              Everything you need to succeed, all in one place
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                title: "Lightning Fast",
-                description:
-                  "Built for speed and performance with cutting-edge technology",
-                icon: "⚡",
-              },
-              {
-                title: "Secure & Reliable",
-                description:
-                  "Enterprise-grade security with 99.9% uptime guarantee",
-                icon: "🔒",
-              },
-              {
-                title: "24/7 Support",
-                description:
-                  "Our expert team is here to help you succeed around the clock",
-                icon: "🚀",
-              },
-            ].map((feature, index) => (
-              <div
-                key={index}
-                className="bg-gray-800 p-8 rounded-xl hover:shadow-lg transition-shadow border border-gray-700 hover:border-gray-600"
-              >
-                <div className="text-4xl mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-semibold text-white mb-3">
-                  {feature.title}
+          <div className="relative group">
+            <div className="border  aspect-video shadow-2xl flex items-center justify-center relative overflow-hidden">
+              <Image
+                src="/issue-landing.png"
+                alt="DevNotify App Dashboard"
+                width={800}
+                height={450}
+                className="w-full h-full rounded-b-xl"
+              />
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 flex flex-col items-center justify-center text-gray-600 hidden">
+                <Github className="w-16 h-16 mb-4 text-gray-400" />
+                <h3 className="text-xl font-semibold mb-2">
+                  DevNotify Dashboard
                 </h3>
-                <p className="text-gray-400">{feature.description}</p>
+                <p className="text-sm text-center max-w-sm">
+                  Your personalized dashboard for tracking starred repositories
+                  and managing notifications
+                </p>
               </div>
-            ))}
+            </div>
           </div>
         </div>
-      </section> */}
-
-      {/* CTA Section */}
-      {/* <section className="py-20 px-6 bg-gradient-to-r from-gray-800 to-black">
-        <div className="max-w-4xl mx-auto text-center text-white">
-          <h2 className="text-4xl font-bold mb-6">Ready to Get Started?</h2>
-          <p className="text-xl mb-8 text-gray-300">
-            Join thousands of satisfied customers and transform your business
-            today
-          </p>
-          <button className="bg-white text-gray-900 px-8 py-4 rounded-lg hover:bg-gray-100 transition-all duration-200 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-            Start Your Free Trial
-          </button>
-        </div>
-      </section> */}
+      </section>
 
       {/* Footer */}
-      {/* <footer className="bg-gray-900 text-white py-12 px-6">
-        <div className="max-w-6xl mx-auto text-center">
-          <div className="text-2xl font-bold mb-4">Brand</div>
-          <p className="text-gray-400 mb-8">
-            Building the future, one step at a time
-          </p>
-          <div className="flex justify-center space-x-6 text-gray-400">
-            <a href="#" className="hover:text-white transition-colors">
-              Privacy
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
-              Terms
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
-              Contact
-            </a>
-          </div>
+      <footer className="relative p-2 flex flex-col space-y-2.5 h-[200px] sm:h-[300px] px-4">
+        <div className="absolute bottom-0 right-0 text-[80px] sm:text-[120px] lg:text-[170px] bg-gradient-to-b from-white to-black bg-clip-text text-transparent font-extrabold opacity-10 leading-none">
+          <span className="block sm:hidden">
+            DEV
+            <br />
+            NOTIFY
+          </span>
+          <span className="hidden sm:block">DEV NOTIFY</span>
         </div>
-      </footer> */}
+        <div className="flex items-center space-x-2.5 relative z-10">
+          <span className="text-lg sm:text-xl font-bold">Build in public</span>
+          <Link
+            href="https://github.com/Surajsuthar/dev-notify"
+            target="_blank"
+            className=""
+          >
+            <Github className="w-5 h-5 sm:w-6 sm:h-6" />
+          </Link>
+        </div>
+        <Link
+          href="https://x.com/Suraj__0067"
+          target="_blank"
+          className="text-foreground relative z-10 text-sm sm:text-base"
+        >
+          @Suraj__0067
+        </Link>
+      </footer>
     </main>
   );
 };

@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { QueryProvider } from "@/components/providers/query-provider";
 
 export const metadata: Metadata = {
-  title: "DevNotify",
+  title: "DevNotify | GitHub Repository & Issue Tracker",
   description: "Github issue notifier",
 };
 

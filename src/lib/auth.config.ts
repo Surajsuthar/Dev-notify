@@ -8,7 +8,7 @@ export default {
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
       authorization: {
         params: {
-          scope: "read:user user:email repo public_repo admin:repo_hook",
+          scope: "read:user user:email repo",
         },
       },
     }),

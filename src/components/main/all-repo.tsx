@@ -24,12 +24,11 @@ import {
 import { RepoDataTableType } from "@/types";
 
 export const AllRepo = () => {
-
   const { data: userRepos, isLoading } = useQuery({
     queryKey: ["userRepos"],
     queryFn: () => getStarredReposForUser(),
   });
-  
+
   const [searchTerm, setSearchTerm] = useState("");
   const [languageFilter, setLanguageFilter] = useState("all");
 
@@ -74,7 +73,7 @@ export const AllRepo = () => {
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className=" rounded-none">
         <CardContent>
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
@@ -84,12 +83,12 @@ export const AllRepo = () => {
                   placeholder="Search repositories..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 rounded-none"
                 />
               </div>
             </div>
             <Select value={languageFilter} onValueChange={setLanguageFilter}>
-              <SelectTrigger className="w-full sm:w-48">
+              <SelectTrigger className="w-full rounded-none sm:w-48">
                 <SelectValue placeholder="Filter by language" />
               </SelectTrigger>
               <SelectContent>
@@ -113,7 +112,7 @@ export const AllRepo = () => {
           </div>
         </CardContent>
       </Card>
-      <Card>
+      <Card className="rounded-none">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>Repositories</span>

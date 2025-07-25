@@ -28,7 +28,6 @@ A GitHub tracker that notifies developers about issues from starred and trending
 - PostgreSQL database
 - GitHub OAuth App
 
-
 ### Installation
 
 1. **Clone the repository**

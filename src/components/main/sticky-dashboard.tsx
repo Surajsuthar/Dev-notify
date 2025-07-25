@@ -3,9 +3,12 @@
 import { useMemo, useState } from "react";
 import { AllRepo } from "./all-repo";
 import { Issues } from "./issues";
-import { UserInfo } from "./user-info";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MergeRequests } from "./merge-req";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { useSession } from "next-auth/react";
+import { ExternalLink } from "lucide-react";
+import Link from "next/link";
 
 interface TabConfig {
   id: string;
@@ -17,7 +20,7 @@ interface TabConfig {
 
 export const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("issues");
-
+  const { data: session } = useSession();
   const tabs: TabConfig[] = useMemo(
     () => [
       {
@@ -39,7 +42,7 @@ export const Dashboard = () => {
         label: "Merge Requests",
         title: "Merge Requests",
         description: "Manage your merge requests",
-        component: <UserInfo />,
+        component: <MergeRequests />,
       },
     ],
     [],
@@ -49,31 +52,62 @@ export const Dashboard = () => {
 
   return (
     <main className="w-full h-screen flex flex-col">
-      <div className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
-        <div className="p-6">
-          <div className="flex flex-col space-y-6">
-            <Tabs
-              value={activeTab}
-              onValueChange={setActiveTab}
-              className="w-full"
-            >
-              <TabsList className="grid w-full max-w-md grid-cols-3">
-                {tabs.map((tab) => (
-                  <TabsTrigger
-                    key={tab.id}
-                    value={tab.id}
-                    className="cursor-pointer"
-                  >
-                    {tab.label}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </Tabs>
-            <div className="flex flex-col gap-2">
-              <h1 className="text-3xl font-bold tracking-tight">
-                {currentTab.title}
-              </h1>
-              <p className="text-muted-foreground">{currentTab.description}</p>
+      <div className="sticky border top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
+        <div className="p-4">
+          <div className="flex justify-between w-full">
+            <div className="flex flex-col space-y-6  w-full md:w-1/3">
+              <Tabs
+                value={activeTab}
+                onValueChange={setActiveTab}
+                className="w-full"
+              >
+                <TabsList className="grid w-full rounded-none max-w-md grid-cols-3">
+                  {tabs.map((tab) => (
+                    <TabsTrigger
+                      key={tab.id}
+                      value={tab.id}
+                      className="cursor-pointer rounded-none"
+                    >
+                      {tab.label}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </Tabs>
+              <div className="flex flex-col gap-2">
+                <h1 className="text-3xl font-bold tracking-tight">
+                  {currentTab.title}
+                </h1>
+                <p className="text-muted-foreground">
+                  {currentTab.description}
+                </p>
+              </div>
+            </div>
+            <div className="hidden md:block">
+              <div className="flex items-center space-x-6 justify-end py-2 rounded-lg">
+                <div className="flex flex-col gap-2 items-end ">
+                  <Avatar className="w-12 h-12">
+                    <AvatarImage src={(session?.user as any)?.image || ""} />
+                    <AvatarFallback>
+                      {(session?.user as any).name?.charAt(0) || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col text-right gap-2">
+                    <h1 className="text-xl flex items-center gap-1 font-bold tracking-tight">
+                      @{session?.user?.githubLogin}
+                      <Link
+                        href={`https://github.com/${session?.user?.githubLogin}`}
+                        target="_blank"
+                        className="text-xs text-muted-foreground"
+                      >
+                        <ExternalLink className="w-4 h-4 ml-2" />
+                      </Link>
+                    </h1>
+                    <p className="text-xs text-muted-foreground">
+                      {session?.user?.email}
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

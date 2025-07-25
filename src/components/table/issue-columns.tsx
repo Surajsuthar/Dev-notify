@@ -3,9 +3,19 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, MessageCircle, Calendar, GitBranch, Info } from "lucide-react";
+import {
+  ExternalLink,
+  MessageCircle,
+  Calendar,
+  GitBranch,
+  Info,
+} from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { IssueDataTableType } from "@/types";
 
 export const issueColumns: ColumnDef<IssueDataTableType>[] = [
@@ -45,13 +55,11 @@ export const issueColumns: ColumnDef<IssueDataTableType>[] = [
                   </span>
                 </HoverCardContent>
               </HoverCard>
-            )}  
+            )}
           </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <GitBranch className="w-3 h-3" />
-            <span>
-              {issue.owner}
-            </span>
+            <span>{issue.owner}</span>
           </div>
         </div>
       );
@@ -73,11 +81,7 @@ export const issueColumns: ColumnDef<IssueDataTableType>[] = [
         }
       };
 
-      return (
-        <Badge className={getstateColor(state)}>
-          {state}
-        </Badge>
-      );
+      return <Badge className={getstateColor(state)}>{state}</Badge>;
     },
   },
   {
@@ -85,7 +89,13 @@ export const issueColumns: ColumnDef<IssueDataTableType>[] = [
     header: "Language",
     cell: ({ row }) => {
       const language = row.getValue("language") as string;
-      return <Badge className={`rounded-md bg-blue-400/80 px-2 py-1 text-xs font-medium ${language ? "text-white" : "text-muted-foreground"}`}>{language ? language : "No language"}</Badge>;
+      return (
+        <Badge
+          className={`rounded-md bg-blue-400/80 px-2 py-1 text-xs font-medium ${language ? "text-white" : "text-muted-foreground"}`}
+        >
+          {language ? language : "No language"}
+        </Badge>
+      );
     },
   },
   {
@@ -95,9 +105,17 @@ export const issueColumns: ColumnDef<IssueDataTableType>[] = [
       const labels = row.getValue("labels") as string[];
       return (
         <div className="flex flex-wrap gap-1">
-          {labels.length === 0 && <Badge variant="outline" className="text-xs">No labels</Badge>}
-          {labels.slice(0, 2).map((label, index) => (
-            <Badge key={index} variant="secondary" className="text-xs bg-purple-500/20 text-purple-500">
+          {labels.length === 0 && (
+            <Badge variant="outline" className="text-xs">
+              No labels
+            </Badge>
+          )}
+          {labels.slice(0, 1).map((label, index) => (
+            <Badge
+              key={index}
+              variant="secondary"
+              className="text-xs bg-purple-500/20 text-purple-500"
+            >
               {label}
             </Badge>
           ))}
@@ -133,9 +151,11 @@ export const issueColumns: ColumnDef<IssueDataTableType>[] = [
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <MessageCircle className="w-3 h-3" />
           <span>{comments}</span>
-          {(
-            <span className="text-xs">+{reactions ? reactions : 0} reactions</span>
-          )}
+          {
+            <span className="text-xs">
+              +{reactions ? reactions : 0} reactions
+            </span>
+          }
         </div>
       );
     },

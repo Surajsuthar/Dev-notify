@@ -19,7 +19,7 @@ export const getGithubService = reactCache(async () => {
     console.error("Error getting Github service", error);
     return null;
   }
-})
+});
 
 export const getAllStarredReposFromGithub = reactCache(async () => {
   try {
@@ -41,11 +41,7 @@ export const getAllStarredReposFromGithub = reactCache(async () => {
       };
     }
 
-    const rateLimit = await githubClient.getRateLimit();
-    console.log("Rate limit", rateLimit);
-
     const starredRepos = await githubClient.getStarredRepos();
-
     const userRepos: Repo[] = starredRepos.map((repo) => ({
       github_id: String(repo.id),
       node_id: repo.node_id,
@@ -61,7 +57,9 @@ export const getAllStarredReposFromGithub = reactCache(async () => {
       issues: repo.open_issues_count,
     }));
 
-    const uniqueRepos = Array.from(new Map(userRepos.map(r => [r.node_id, r])).values());
+    const uniqueRepos = Array.from(
+      new Map(userRepos.map((r) => [r.node_id, r])).values(),
+    );
     await Promise.all(
       uniqueRepos.map(async (repo) => {
         try {
@@ -113,14 +111,42 @@ export const getAllStarredReposFromGithub = reactCache(async () => {
         } catch (err) {
           console.error(`Failed to process repo ${repo.full_name}`, err);
         }
-      })
+      }),
     );
+
+    const allUserRepo = await db.userRepo.findMany({
+      where: {
+        userId: user?.id!,
+      },
+      select: {
+        repo: {
+          select: {
+            id: true,
+            node_id: true,
+          },
+        },
+      },
+    });
+
+    const newRepoNodeIds = new Set(uniqueRepos.map((repo) => repo.node_id));
+    const userRepoIdsToDelete = allUserRepo
+      .filter((userRepo) => !newRepoNodeIds.has(userRepo.repo.node_id))
+      .map((userRepo) => userRepo.repo.id);
+
+    if (userRepoIdsToDelete.length > 0) {
+      await db.userRepo.deleteMany({
+        where: {
+          id: {
+            in: userRepoIdsToDelete,
+          },
+        },
+      });
+    }
 
     return {
       success: true,
       data: userRepos,
     };
-
   } catch (error) {
     return {
       success: false,
@@ -155,7 +181,7 @@ export const getStarredReposForUser = reactCache(async () => {
       ...userRepo.repo,
       issues: userRepo.repo.issues,
     })),
-  }
+  };
 });
 
 export const getAllIssuesFromGithub = reactCache(async () => {
@@ -176,16 +202,16 @@ export const getAllIssuesFromGithub = reactCache(async () => {
     };
   }
 
-  const allUserRepos = await getStarredReposForUser();
+  const allRepos = await db.repo.findMany({});
 
-  if (allUserRepos.success && allUserRepos.data && allUserRepos.data.length > 0) {
+  if (allRepos && allRepos.length > 0) {
     const issues: Issue[] = [];
     await Promise.all(
-      allUserRepos.data.map(async (repo) => {
+      allRepos.map(async (repo) => {
         const issuesData = await githubClient.getIssues(repo.owner, repo.name);
         if (issuesData.length > 0) {
           issuesData.forEach(async (issue) => {
-            if(Object.keys(issue?.pull_request || {}).length > 0) {
+            if (Object.keys(issue?.pull_request || {}).length > 0) {
               return;
             }
             await db.issueTracker.upsert({
@@ -197,12 +223,13 @@ export const getAllIssuesFromGithub = reactCache(async () => {
               },
               update: {
                 title: issue.title,
-                label: issue.labels.map((label) => {
-                  if (typeof label === 'string') {
-                    return label;
-                  }
-                  return label.name || '';
-                }) || [],
+                label:
+                  issue.labels.map((label) => {
+                    if (typeof label === "string") {
+                      return label;
+                    }
+                    return label.name || "";
+                  }) || [],
                 state: issue.state as "open" | "closed",
                 comments: issue.comments,
                 reactions: issue.reactions?.total_count || 0,
@@ -214,21 +241,22 @@ export const getAllIssuesFromGithub = reactCache(async () => {
                 issue_url: issue.html_url,
                 createdAt: issue.created_at,
                 createdBy: issue.user?.login || "",
-                label: issue.labels.map((label) => {
-                  if (typeof label === 'string') {
-                    return label;
-                  }
-                  return label.name || '';
-                }) || [],
+                label:
+                  issue.labels.map((label) => {
+                    if (typeof label === "string") {
+                      return label;
+                    }
+                    return label.name || "";
+                  }) || [],
                 state: issue.state as "open" | "closed",
                 comments: issue.comments,
                 reactions: issue.reactions?.total_count || 0,
                 assigned: (issue.assignees?.length || 0) > 0,
               },
-            })
+            });
           });
         }
-      })
+      }),
     );
 
     return {
@@ -263,7 +291,7 @@ export const getRepoIssuesForUser = reactCache(async () => {
       repo: {
         include: {
           issueTracker: true,
-        }
+        },
       },
     },
   });
@@ -273,7 +301,7 @@ export const getRepoIssuesForUser = reactCache(async () => {
       return {
         ...issue,
         owner: userRepo.repo.owner,
-        language: userRepo.repo.language || ""  ,
+        language: userRepo.repo.language || "",
         createdAt: issue.createdAt.toISOString(),
         labels: issue.label,
         assignees: issue.assigned,
@@ -282,12 +310,16 @@ export const getRepoIssuesForUser = reactCache(async () => {
         issueNumber: Number(issue.issueNumber),
         issue_url: issue.issue_url,
         state: issue.state as "open" | "closed",
-      }
-    })
-  })
+      };
+    });
+  });
+
+  issues.sort((a, b) => {
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
 
   return {
     success: true,
     data: issues,
-  }
+  };
 });
