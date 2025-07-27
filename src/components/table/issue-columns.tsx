@@ -49,7 +49,7 @@ export const issueColumns: ColumnDef<IssueDataTableType>[] = [
                 <HoverCardTrigger>
                   <Info className="w-3 h-3 text-muted-foreground cursor-pointer" />
                 </HoverCardTrigger>
-                <HoverCardContent>
+                <HoverCardContent className="px-3 py-2">
                   <span className="text-sm text-muted-foreground">
                     {issue.title}
                   </span>

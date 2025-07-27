@@ -24,98 +24,99 @@ import {
   Search,
   RefreshCw,
   AlertCircle,
-  CheckCircle,
-  Clock,
-  TrendingUp,
   GitBranch,
-  Filter,
+  RefreshCcw,
 } from "lucide-react";
-import { StatCard } from "./stat-card";
 import { useQuery } from "@tanstack/react-query";
-import { getRepoIssuesForUser } from "../../../module/repo/repo";
+import { getAllIssuesFromGithub } from "@/module/repo/repo";
 import { IssueDataTableType } from "@/types";
+import { useSession } from "next-auth/react";
 
 export const Issues = () => {
-  const [issues, setIssues] = useState<IssueDataTableType[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [labelFilter, setLabelFilter] = useState("all");
   const [assigneeFilter, setAssigneeFilter] = useState("all");
+  const [repoFilter, setRepoFilter] = useState("all");
+  const { data: session } = useSession();
 
-  const { data: userIssues, isLoading } = useQuery({
+  const {
+    data: userIssues,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ["userIssues"],
-    queryFn: () => getRepoIssuesForUser(),
+    queryFn: () => getAllIssuesFromGithub(),
+    staleTime: 1000 * 60 * 60,
+    enabled: !!session?.user,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 
-  const mockIssues: IssueDataTableType[] =
-    userIssues?.data?.map((issue) => ({
-      ...issue,
-      labels: issue.labels || [],
-      createdAt: new Date(issue.createdAt).toISOString(),
-      comments: issue.comments || 0,
-      reactions: issue.reactions || 0,
-      assignees: issue.assignees || false,
-    })) || [];
-
-  const stats = useMemo(
-    () => [
-      {
-        title: "Total Issues",
-        Icon: AlertCircle,
-        value: issues.length,
-        description: "Tracked across all repos",
-        color: "text-green-600",
-      },
-      {
-        title: "Open Issues",
-        Icon: Clock,
-        value: issues.filter((i) => i.state === "open").length,
-        description: "Need attention",
-        color: "text-yellow-600",
-      },
-      {
-        title: "Closed Issues",
-        Icon: CheckCircle,
-        value: issues.filter((i) => i.state === "closed").length,
-        description: "Resolved",
-        color: "text-green-600",
-      },
-      {
-        title: "Urgent Issues",
-        Icon: TrendingUp,
-        // value: issues.filter((i) => i.state === "urgent").length,
-        description: "High priority",
-        color: "text-red-600",
-      },
-    ],
-    [issues],
-  );
+  const mockIssues = useMemo<IssueDataTableType[]>(() => {
+    return (
+      userIssues?.data?.map((issue) => ({
+        ...issue,
+        labels: issue.labels || [],
+        createdAt: new Date(issue.createdAt).toISOString(),
+        comments: issue.comments || 0,
+        reactions: issue.reactions || 0,
+        assignees: issue.assigned || false,
+      })) || []
+    );
+  }, [userIssues]);
 
   const labels = useMemo(() => {
-    return [...new Set(mockIssues.flatMap((issue) => issue.labels))];
+    return [...new Set(mockIssues.flatMap((issue) => issue.labels))].sort();;
   }, [mockIssues]);
 
   const language = useMemo(() => {
-    return [...new Set(mockIssues.map((issues) => issues.language))];
+    return [...new Set(mockIssues.map((issues) => issues.language))].sort();;
   }, [mockIssues]);
 
-  const filteredIssues = mockIssues.filter((issue) => {
-    const matchesSearch =
-      issue.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      issue.owner.toLowerCase().includes(searchTerm.toLowerCase());
+  const allRepo = useMemo(() => {
+    return [...new Set(mockIssues.map((issues) => issues.owner))].sort();;
+  }, [mockIssues]);
 
-    const matchesStatus =
-      statusFilter === "all" || issue.language === statusFilter;
-
-    const matchesLabel =
-      labelFilter === "all" || issue.labels?.includes(labelFilter);
-
-    const matchesAssignee =
-      assigneeFilter === "all" ||
-      issue.assignees === (assigneeFilter === "true");
-
-    return matchesSearch && matchesStatus && matchesLabel && matchesAssignee;
-  });
+  const filteredIssues = useMemo(() => {
+    return mockIssues.filter((issue) => {
+      const matchesSearch =
+        issue.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        issue.owner.toLowerCase().includes(searchTerm.toLowerCase());
+  
+      const matchesStatus =
+        statusFilter === "all" || issue.language === statusFilter;
+  
+      const matchesLabel =
+        labelFilter === "all" || issue.labels?.includes(labelFilter);
+  
+      const matchesAssignee =
+        assigneeFilter === "all" ||
+        issue.assigned === (assigneeFilter === "true");
+  
+      const matchRepo = repoFilter === "all" || issue.owner === repoFilter;
+  
+      return (
+        matchesSearch &&
+        matchesStatus &&
+        matchesLabel &&
+        matchesAssignee &&
+        matchRepo
+      );
+    });
+  }, [mockIssues, searchTerm, statusFilter, labelFilter, assigneeFilter, repoFilter]);
+  
+  if (isError) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="flex items-center gap-2">
+          <RefreshCw className="w-4 h-4 animate-spin" />
+          <span> Failed to load issues. Please try again.</span>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -130,13 +131,6 @@ export const Issues = () => {
 
   return (
     <div className="space-y-6">
-      {/* Stats Cards */}
-      {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {stats.map((stat) => (
-          <StatCard key={stat.title} {...stat} color={stat.color} />
-        ))}
-      </div> */}
-
       <Card className="rounded-none">
         <CardContent className="">
           <div className="flex flex-col sm:flex-row gap-4">
@@ -151,6 +145,20 @@ export const Issues = () => {
                 />
               </div>
             </div>
+
+            <Select value={repoFilter} onValueChange={setRepoFilter}>
+              <SelectTrigger className="w-full rounded-none sm:w-48">
+                <SelectValue placeholder="Filter by state" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All repository</SelectItem>
+                {allRepo?.map((r) => (
+                  <SelectItem key={r} value={r as string}>
+                    {r}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-full rounded-none sm:w-48">
@@ -188,7 +196,7 @@ export const Issues = () => {
                 <SelectValue placeholder="Filter by assignees" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="true">Assigned</SelectItem>
                 <SelectItem value="false">Unassigned</SelectItem>
               </SelectContent>
@@ -200,9 +208,14 @@ export const Issues = () => {
                 setSearchTerm("");
                 setStatusFilter("all");
                 setLabelFilter("all");
+                setRepoFilter("all");
               }}
             >
               Clear Filters
+            </Button>
+
+            <Button variant={"outline"} onClick={() => refetch()}>
+              <RefreshCcw />
             </Button>
           </div>
         </CardContent>

@@ -13,6 +13,21 @@ export type Repo = {
   issues: number;
 };
 
+export type GetReposResponse =
+  | {
+      success: boolean;
+      data: Repo[];
+    }
+  | {
+      success: boolean;
+      message: string;
+      error: string;
+    }
+  | {
+      success: boolean;
+      message: string;
+    };
+
 export type Issue = {
   id: number;
   title: string;
@@ -20,7 +35,7 @@ export type Issue = {
   state: "open" | "closed";
   labels?: string[];
   issue_url: string;
-  assignees?: boolean;
+  assigned?: boolean;
   comments?: number;
   reactions?: number;
   createdAt: string;

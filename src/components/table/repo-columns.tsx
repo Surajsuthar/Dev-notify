@@ -11,6 +11,7 @@ import {
 } from "../ui/hover-card";
 import Link from "next/link";
 import { RepoDataTableType } from "@/types";
+import { roundUpFormat } from "@/lib/utils";
 
 export const repoColumns: ColumnDef<RepoDataTableType>[] = [
   {
@@ -124,7 +125,7 @@ export const repoColumns: ColumnDef<RepoDataTableType>[] = [
       return (
         <div className="flex items-center gap-2">
           <Badge variant={"default"} className="bg-green-400/80">
-            {row.original.issues}
+            {roundUpFormat(row.original.issues)}
           </Badge>
         </div>
       );
@@ -136,7 +137,7 @@ export const repoColumns: ColumnDef<RepoDataTableType>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex items-center gap-2">
-          <span>{row.original.stars}</span>
+          <span>{roundUpFormat(row.original.stars)}</span>
         </div>
       );
     },

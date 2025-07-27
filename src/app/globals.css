@@ -4,11 +4,16 @@
 
 @custom-variant dark (&:is(.dark *));
 
-html,
+html {
+  scroll-behavior: smooth;
+}
 body {
   max-width: 100vw;
   overflow-x: hidden;
   font-family: "Lufga", sans-serif;
+}
+:root {
+  --header-height: 80px; /* Adjust based on actual header height */
 }
 
 @theme inline {

@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { roundUpFormat } from "@/lib/utils";
 
 interface GithubResponse {
   stargazers_count: number;
@@ -36,9 +37,4 @@ export const useGithub = () => {
     isLoading,
     error,
   };
-};
-
-const roundUpFormat = (count: number) => {
-  if (count < 1000) return count.toString();
-  return (count / 1000).toFixed(1).replace(/\.0$/, "") + "k";
 };

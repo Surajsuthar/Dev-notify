@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { Github } from "lucide-react";
 import { Button } from "../ui/button";
 import { WordRotate } from "../magicui/word-rotate";
@@ -13,8 +13,12 @@ import { useGithub } from "@/hooks/use-github-count";
 export const LandingPage = () => {
   const { stargazers_count } = useGithub();
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
-    <main className="w-full max-w-[1100px] mx-auto min-h-screen">
+    <main className="w-full relative max-w-[1100px] mx-auto min-h-screen pt-[var(--header-height)]">
       <header className="fixed top-4 left-4 right-4 sm:left-0 sm:right-0 z-50">
         <div className="max-w-6xl mx-auto backdrop-blur-lg border shadow-xl rounded-none py-2 px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-10 md:h-16">
@@ -25,16 +29,22 @@ export const LandingPage = () => {
             </div>
             <Button
               variant="outline"
-              className="shadow-lg bg-blue-700/90 hover:bg-blue-700/60 flex hover:shadow-xl transform hover:scale-105 cursor-pointer transition-all duration-300 text-xs sm:text-sm"
+              className="shadow-lg rounded-none bg-blue-700/90 hover:bg-blue-700/60 flex hover:shadow-xl transform hover:scale-105 cursor-pointer transition-all duration-300 text-xs sm:text-sm"
             >
-              <Github className="w-4 h-4" />
-              {stargazers_count}
+              <Link
+                href={"https://github.com/Surajsuthar/dev-notify"}
+                target="_blank"
+                className="p-1 flex space-x-2 items-center"
+              >
+                <Github className="w-4 h-4" />
+                <p>{stargazers_count}</p>
+              </Link>
             </Button>
           </div>
         </div>
       </header>
 
-      <section className="pt-24 sm:pt-32 pb-20 px-2 sm:px-6">
+      <section className="py-20 px-2 sm:px-6">
         <div className="max-w-6xl mx-auto text-center">
           <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center min-h-64 gap-8 lg:gap-0">
             <div className="flex flex-col gap-2.5 justify-center items-center lg:items-start text-center lg:text-left">
@@ -56,7 +66,7 @@ export const LandingPage = () => {
                 repositories and issues.
               </p>
               <Button
-                className="cursor-pointer flex gap-2 w-full sm:w-auto"
+                className="cursor-pointer rounded-none flex gap-2 w-full sm:w-auto"
                 onClick={() =>
                   signIn("github", {
                     callbackUrl: "/app",
@@ -70,37 +80,26 @@ export const LandingPage = () => {
               </Button>
             </div>
           </div>
-          <div></div>
         </div>
       </section>
 
-      <section className="py-8 sm:py-8 px-2 sm:px-6">
+      <section className="py-8 sm:py-12 px-2 sm:px-6">
         <div className="max-w-6xl mx-auto">
           <div className="relative group">
-            <div className="border  aspect-video shadow-2xl flex items-center justify-center relative overflow-hidden">
+            <div className="border aspect-video shadow-2xl rounded-none flex items-center justify-center relative overflow-hidden">
               <Image
-                src="/issue-landing.png"
+                src="/landing-page.png"
                 alt="DevNotify App Dashboard"
                 width={800}
                 height={450}
-                className="w-full h-full rounded-b-xl"
+                className="w-full h-full"
+                priority
               />
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 flex flex-col items-center justify-center text-gray-600 hidden">
-                <Github className="w-16 h-16 mb-4 text-gray-400" />
-                <h3 className="text-xl font-semibold mb-2">
-                  DevNotify Dashboard
-                </h3>
-                <p className="text-sm text-center max-w-sm">
-                  Your personalized dashboard for tracking starred repositories
-                  and managing notifications
-                </p>
-              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="relative p-2 flex flex-col space-y-2.5 h-[200px] sm:h-[300px] px-4">
         <div className="absolute bottom-0 right-0 text-[80px] sm:text-[120px] lg:text-[170px] bg-gradient-to-b from-white to-black bg-clip-text text-transparent font-extrabold opacity-10 leading-none">
           <span className="block sm:hidden">

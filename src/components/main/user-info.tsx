@@ -9,7 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,29 +17,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import {
-  User,
   Github,
-  Mail,
-  Phone,
-  MessageCircle,
-  Settings,
   LogOut,
   Bell,
-  Shield,
-  Globe,
-  Calendar,
-  MapPin,
   ExternalLink,
-  Edit,
-  Save,
-  X,
   CheckCircle,
   AlertCircle,
-  Star,
-  GitBranch,
-  Users,
   Activity,
 } from "lucide-react";
+import  { User } from "next-auth";
 
 interface GitHubStats {
   publicRepos: number;
@@ -149,14 +134,14 @@ export const UserInfo = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Avatar className="w-16 h-16">
-                <AvatarImage src={(session.user as any).image || ""} />
+                <AvatarImage src={(session.user as User).image || ""} />
                 <AvatarFallback>
-                  {(session.user as any).name?.charAt(0) || "U"}
+                  {(session.user as User).name?.charAt(0) || "U"}
                 </AvatarFallback>
               </Avatar>
               <div>
                 <CardTitle className="text-2xl">
-                  {(session.user as any).name || "User"}
+                  {(session.user as User).name || "User"}
                 </CardTitle>
                 <CardDescription className="flex items-center gap-2">
                   @{session.user.githubLogin || "github-user"}
@@ -192,7 +177,6 @@ export const UserInfo = () => {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <User className="w-4 h-4" />
                     Personal Information
                   </CardTitle>
                 </CardHeader>

@@ -1,10 +1,9 @@
 "use server";
 
 import { GitHubService } from "@/lib/github";
-import { auth } from "../../auth";
+import { auth } from "@/auth";
 import { db } from "@/lib/prisma";
-import { IssueDataTableType, Repo } from "@/types";
-import { Issue } from "@/types";
+import { GetReposResponse, IssueDataTableType, Repo } from "@/types";
 import { getUser } from "../user/user";
 import { cache as reactCache } from "react";
 
@@ -21,6 +20,55 @@ export const getGithubService = reactCache(async () => {
   }
 });
 
+export const getReposFromGithub = reactCache(
+  async (): Promise<GetReposResponse> => {
+    try {
+      const session = await auth();
+      if (!session?.user) {
+        return {
+          success: false,
+          message: "User not found",
+        };
+      }
+
+      const githubClient = await getGithubService();
+      if (!githubClient) {
+        return {
+          success: false,
+          message: "Github client not found",
+        };
+      }
+
+      const starredRepos = await githubClient.getStarredRepos();
+      const userRepos: Repo[] = starredRepos.map((repo) => ({
+        github_id: String(repo.id),
+        node_id: repo.node_id,
+        name: repo.name,
+        owner: repo.owner.login,
+        description: repo.description,
+        full_name: repo.full_name,
+        github_url: repo.html_url,
+        topics: repo.topics,
+        language: repo.language || "",
+        homepage_url: repo.homepage,
+        stars: repo.stargazers_count,
+        issues: repo.open_issues_count,
+      }));
+
+      return {
+        success: true,
+        data: userRepos,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: "Error fetching repositories",
+        error: error instanceof Error ? error.message : String(error),
+      };
+    }
+  },
+);
+
 export const getAllStarredReposFromGithub = reactCache(async () => {
   try {
     const session = await auth();
@@ -34,6 +82,7 @@ export const getAllStarredReposFromGithub = reactCache(async () => {
     const user = await getUser(session.user.email);
 
     const githubClient = await getGithubService();
+
     if (!githubClient) {
       return {
         success: false,
@@ -41,25 +90,19 @@ export const getAllStarredReposFromGithub = reactCache(async () => {
       };
     }
 
-    const starredRepos = await githubClient.getStarredRepos();
-    const userRepos: Repo[] = starredRepos.map((repo) => ({
-      github_id: String(repo.id),
-      node_id: repo.node_id,
-      name: repo.name,
-      owner: repo.owner.login,
-      description: repo.description,
-      full_name: repo.full_name,
-      github_url: repo.html_url,
-      topics: repo.topics,
-      language: repo.language || "",
-      homepage_url: repo.homepage,
-      stars: repo.stargazers_count,
-      issues: repo.open_issues_count,
-    }));
+    const userRepo = await getReposFromGithub();
+
+    if (!userRepo.success || !("data" in userRepo)) {
+      return {
+        success: false,
+        message: "Repo not found",
+      };
+    }
 
     const uniqueRepos = Array.from(
-      new Map(userRepos.map((r) => [r.node_id, r])).values(),
+      new Map(userRepo.data.map((r: Repo) => [r.node_id, r])).values(),
     );
+
     await Promise.all(
       uniqueRepos.map(async (repo) => {
         try {
@@ -136,7 +179,8 @@ export const getAllStarredReposFromGithub = reactCache(async () => {
     if (userRepoIdsToDelete.length > 0) {
       await db.userRepo.deleteMany({
         where: {
-          id: {
+          userId: user?.id,
+          repoId: {
             in: userRepoIdsToDelete,
           },
         },
@@ -145,7 +189,7 @@ export const getAllStarredReposFromGithub = reactCache(async () => {
 
     return {
       success: true,
-      data: userRepos,
+      data: uniqueRepos,
     };
   } catch (error) {
     return {
@@ -194,6 +238,8 @@ export const getAllIssuesFromGithub = reactCache(async () => {
     };
   }
 
+  const user = await getUser(session.user.email);
+
   const githubClient = await getGithubService();
   if (!githubClient) {
     return {
@@ -202,62 +248,61 @@ export const getAllIssuesFromGithub = reactCache(async () => {
     };
   }
 
-  const allRepos = await db.repo.findMany({});
+  const allRepos = await db.userRepo.findMany({
+    where: {
+      userId: user?.id,
+    },
+    select: {
+      repo: true,
+    },
+  });
 
-  if (allRepos && allRepos.length > 0) {
-    const issues: Issue[] = [];
+  const userRepo = await getReposFromGithub();
+
+  if (!userRepo.success || !("data" in userRepo)) {
+    return {
+      success: false,
+      message: "Repo not found",
+    };
+  }
+
+  if (userRepo.success && userRepo.data.length > 0) {
+    const issues: IssueDataTableType[] = [];
     await Promise.all(
-      allRepos.map(async (repo) => {
+      userRepo.data.map(async (repo) => {
         const issuesData = await githubClient.getIssues(repo.owner, repo.name);
         if (issuesData.length > 0) {
           issuesData.forEach(async (issue) => {
             if (Object.keys(issue?.pull_request || {}).length > 0) {
               return;
             }
-            await db.issueTracker.upsert({
-              where: {
-                issueNumber_repoId: {
-                  issueNumber: String(issue.number),
-                  repoId: repo.id,
-                },
-              },
-              update: {
-                title: issue.title,
-                label:
-                  issue.labels.map((label) => {
-                    if (typeof label === "string") {
-                      return label;
-                    }
-                    return label.name || "";
-                  }) || [],
-                state: issue.state as "open" | "closed",
-                comments: issue.comments,
-                reactions: issue.reactions?.total_count || 0,
-              },
-              create: {
-                issueNumber: String(issue.number),
-                repoId: repo.id,
-                title: issue.title,
-                issue_url: issue.html_url,
-                createdAt: issue.created_at,
-                createdBy: issue.user?.login || "",
-                label:
-                  issue.labels.map((label) => {
-                    if (typeof label === "string") {
-                      return label;
-                    }
-                    return label.name || "";
-                  }) || [],
-                state: issue.state as "open" | "closed",
-                comments: issue.comments,
-                reactions: issue.reactions?.total_count || 0,
-                assigned: (issue.assignees?.length || 0) > 0,
-              },
+            issues.push({
+              issueNumber: issue.number,
+              owner: repo.owner,
+              title: issue.title,
+              issue_url: issue.html_url,
+              createdAt: issue.created_at,
+              labels:
+                issue.labels.map((label) => {
+                  if (typeof label === "string") {
+                    return label;
+                  }
+                  return label.name || "";
+                }) || [],
+              state: issue.state as "open" | "closed",
+              comments: issue.comments,
+              reactions: issue.reactions?.total_count || 0,
+              assigned: (issue.assignees?.length || 0) > 0,
+              language: repo.language || "No Language",
             });
           });
         }
       }),
     );
+
+    issues.sort((a, b) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
 
     return {
       success: true,
@@ -268,58 +313,5 @@ export const getAllIssuesFromGithub = reactCache(async () => {
   return {
     success: false,
     message: "No repositories found",
-  };
-});
-
-export const getRepoIssuesForUser = reactCache(async () => {
-  const session = await auth();
-
-  if (!session?.user) {
-    return {
-      success: false,
-      message: "User not found",
-    };
-  }
-
-  const user = await getUser(session.user.email);
-
-  const userRepos = await db.userRepo.findMany({
-    where: {
-      userId: user?.id!,
-    },
-    include: {
-      repo: {
-        include: {
-          issueTracker: true,
-        },
-      },
-    },
-  });
-
-  const issues: IssueDataTableType[] = userRepos.flatMap((userRepo) => {
-    return userRepo.repo.issueTracker.map((issue) => {
-      return {
-        ...issue,
-        owner: userRepo.repo.owner,
-        language: userRepo.repo.language || "",
-        createdAt: issue.createdAt.toISOString(),
-        labels: issue.label,
-        assignees: issue.assigned,
-        comments: issue.comments,
-        reactions: issue.reactions,
-        issueNumber: Number(issue.issueNumber),
-        issue_url: issue.issue_url,
-        state: issue.state as "open" | "closed",
-      };
-    });
-  });
-
-  issues.sort((a, b) => {
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-  });
-
-  return {
-    success: true,
-    data: issues,
   };
 });

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getStarredReposForUser } from "../../../module/repo/repo";
+import { getStarredReposForUser } from "@/module/repo/repo";
 import { DataTable } from "../table/data-table";
 import { repoColumns } from "../table/repo-columns";
 import {
@@ -24,24 +24,28 @@ import {
 import { RepoDataTableType } from "@/types";
 
 export const AllRepo = () => {
-  const { data: userRepos, isLoading } = useQuery({
-    queryKey: ["userRepos"],
-    queryFn: () => getStarredReposForUser(),
-  });
 
   const [searchTerm, setSearchTerm] = useState("");
   const [languageFilter, setLanguageFilter] = useState("all");
 
-  const repos: RepoDataTableType[] =
-    userRepos?.data?.map((repo) => ({
-      ...repo,
-      stars: Number(repo.stars),
-      homepage_url: repo.homepage_url || "",
-      issues: Number(repo.issues),
-      topics: repo.topics || [],
-      language: repo.language || "",
-      description: repo.description || "",
-    })) || [];
+  const { data: userRepos, isLoading, isError } = useQuery({
+    queryKey: ["userRepos"],
+    queryFn: () => getStarredReposForUser(),
+  });
+
+  const repos: RepoDataTableType[] = useMemo(() => {
+    return (
+      userRepos?.data?.map((repo) => ({
+        ...repo,
+        stars: Number(repo.stars),
+        homepage_url: repo.homepage_url || "",
+        issues: Number(repo.issues),
+        topics: repo.topics || [],
+        language: repo.language || "",
+        description: repo.description || "",
+      })) || []
+    );
+  }, [userRepos]);
 
   const languages = useMemo(() => {
     const langs = Array.from(
@@ -51,14 +55,28 @@ export const AllRepo = () => {
     return langs;
   }, [repos]);
 
-  const filteredRepos = repos.filter((repo) => {
-    const matchesSearch = repo.name
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesLanguage =
-      languageFilter === "all" || repo.language === languageFilter;
-    return matchesSearch && matchesLanguage;
-  });
+  const filteredRepos = useMemo(() => {
+    return repos.filter((repo) => {
+      const matchesSearch = repo.name
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const matchesLanguage =
+        languageFilter === "all" || repo.language === languageFilter;
+      return matchesSearch && matchesLanguage;
+    });
+  }, [repos, searchTerm, languageFilter]);
+
+
+  if (isError) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="flex items-center gap-2">
+          <RefreshCw className="w-4 h-4 animate-spin" />
+          <span> Failed to load repositories. Please try again.</span>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (

@@ -64,25 +64,6 @@ model UserRepo {
   @@unique([userId, repoId])
 }
 
-model IssueTracker {
-  id          String @id @default(cuid())
-  title       String
-  issueNumber String
-  state       String
-  label       String[]
-  issue_url   String
-  assigned    Boolean
-  comments    Int
-  reactions   Int
-  repoId      String
-  createdBy   String
-  repo        Repo   @relation(fields: [repoId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@unique([issueNumber, repoId])
-}
-
 model Repo {
   id            String @id @default(cuid())
   node_id       String @unique
@@ -97,5 +78,4 @@ model Repo {
   topics        String[]
   issues        String
   userRepos     UserRepo[]
-  issueTracker  IssueTracker[]
 }

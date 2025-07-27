@@ -4,11 +4,22 @@ import { useMemo, useState } from "react";
 import { AllRepo } from "./all-repo";
 import { Issues } from "./issues";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MergeRequests } from "./merge-req";
+import { UserRecommendation } from "./user-recommendation";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useSession } from "next-auth/react";
-import { ExternalLink } from "lucide-react";
-import Link from "next/link";
+import { EllipsisVertical } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { signOut } from "next-auth/react";
+import { useQuery } from "@tanstack/react-query";
+import { getAllStarredReposFromGithub } from "@/module/repo/repo";
+import { User } from "next-auth";
 
 interface TabConfig {
   id: string;
@@ -38,15 +49,24 @@ export const Dashboard = () => {
         component: <AllRepo />,
       },
       {
-        id: "merge-requests",
-        label: "Merge Requests",
-        title: "Merge Requests",
-        description: "Manage your merge requests",
-        component: <MergeRequests />,
+        id: "user-recommnadation",
+        label: "Recommendation",
+        title: "Recommendation",
+        description: "github repo and issues recommendation for user",
+        component: <UserRecommendation />,
       },
     ],
     [],
   );
+
+  useQuery({
+    queryKey: ["starred-repos", session?.user?.name],
+    queryFn: getAllStarredReposFromGithub,
+    staleTime: Infinity,
+    enabled: !!session?.user,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+  });
 
   const currentTab = tabs.find((tab) => tab.id === activeTab) || tabs[0];
 
@@ -86,21 +106,32 @@ export const Dashboard = () => {
               <div className="flex items-center space-x-6 justify-end py-2 rounded-lg">
                 <div className="flex flex-col gap-2 items-end ">
                   <Avatar className="w-12 h-12">
-                    <AvatarImage src={(session?.user as any)?.image || ""} />
+                    <AvatarImage src={(session?.user)?.image || ""} />
                     <AvatarFallback>
-                      {(session?.user as any).name?.charAt(0) || "U"}
+                      {session?.user.name?.charAt(0) || "U"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col text-right gap-2">
-                    <h1 className="text-xl flex items-center gap-1 font-bold tracking-tight">
-                      @{session?.user?.githubLogin}
-                      <Link
-                        href={`https://github.com/${session?.user?.githubLogin}`}
-                        target="_blank"
-                        className="text-xs text-muted-foreground"
-                      >
-                        <ExternalLink className="w-4 h-4 ml-2" />
-                      </Link>
+                    <h1 className="text-xl flex items-center gap-0.5 font-bold tracking-tight">
+                      <p>@{session?.user?.githubLogin}</p>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger>
+                          <EllipsisVertical className="w-4 cursor-pointer h-4 ml-4" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-[100px]">
+                          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={() => {
+                              signOut({
+                                redirectTo: "/",
+                              });
+                            }}
+                          >
+                            Log out
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </h1>
                     <p className="text-xs text-muted-foreground">
                       {session?.user?.email}

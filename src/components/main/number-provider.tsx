@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/card";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { getUser } from "../../../module/user/user";
-import { updateTelegramUsername } from "../../../module/user/user";
+import { getUser } from "@/module/user/user";
+import { updateTelegramUsername } from "@/module/user/user";
 import { ArrowRightIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
