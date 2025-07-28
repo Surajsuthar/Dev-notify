@@ -19,7 +19,6 @@ import {
 import { signOut } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
 import { getAllStarredReposFromGithub } from "@/module/repo/repo";
-import { User } from "next-auth";
 
 interface TabConfig {
   id: string;

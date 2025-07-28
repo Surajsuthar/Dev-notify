@@ -42,7 +42,7 @@ export const UsernameProvider = ({ children }: UsernameProviderProps) => {
       }
 
       try {
-        const userData = await getUser(session.user.email);
+        const userData = await getUser(session.user?.email);
         setUser(userData);
       } catch (error) {
         console.error("Error fetching user:", error);

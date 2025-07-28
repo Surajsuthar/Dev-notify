@@ -1,16 +1,38 @@
-version: "3.8"
+version: '3.8'
+
 services:
-  postgres:
-    image: postgres:16
-    container_name: devnotify_postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: devnotify
-      POSTGRES_PASSWORD: devnotifypassword
-      POSTGRES_DB: devnotifydb
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - "5432:5432"
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+    # ✅ Fix DNS resolution issue for GitHub
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=devnotify
+      - POSTGRES_PASSWORD=devnotifypassword
+      - POSTGRES_DB=devnotifydb
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devnotify -d devnotifydb"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
 volumes:
   postgres_data:

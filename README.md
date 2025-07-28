@@ -6,7 +6,6 @@ A GitHub tracker that notifies developers about issues from starred and trending
 
 - **GitHub Integration**: Connect your GitHub account and track starred repositories
 - **Issue Tracking**: Monitor issues from your starred repositories
-- **Direct Contribution**: Reply to notification messages to comment on GitHub issues
 - **Repository Management**: View and manage all your repositories in one place
 - **User Dashboard**: Comprehensive dashboard with tabs for repositories, issues, and user info
 
