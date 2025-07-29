@@ -1,17 +1,8 @@
 import NextAuth from "next-auth";
-import GitHub from "next-auth/providers/github";
 import { db } from "@/lib/prisma";
+import authConfig from "@/lib/auth.config";
 
 const MAX_COOKIE_AGE = 8 * 60 * 60;
-
-const authConfig = {
-  providers: [
-    GitHub({
-      clientId: process.env.GITHUB_CLIENT_ID!,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-    }),
-  ],
-};
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
