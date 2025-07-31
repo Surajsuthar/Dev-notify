@@ -5,6 +5,8 @@ services:
       dockerfile: Dockerfile
       args:
         - DATABASE_URL=postgresql://devnotify:devnotifypassword@db:5432/devnotifydb
+        - NEXT_PUBLIC_POSTHOG_KEY=${NEXT_PUBLIC_POSTHOG_KEY}
+        - NEXT_PUBLIC_POSTHOG_HOST=${NEXT_PUBLIC_POSTHOG_HOST}
     ports:
       - "3000:3000"
     env_file:
