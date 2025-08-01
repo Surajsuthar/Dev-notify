@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "go": "docker compose up -d && pnpm run dev",
+    "go:dev": "docker compose -f docker-compose.dev.yml up -d && pnpm run dev",
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",
     "db:generate": "prisma generate",

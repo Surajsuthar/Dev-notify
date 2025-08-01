@@ -48,7 +48,7 @@ export const Issues = () => {
   } = useQuery({
     queryKey: ["userIssues"],
     queryFn: () => getAllIssuesFromGithub(),
-    staleTime: 1000 * 60 * 60,
+    staleTime: 1000 * 60 * 30,
     enabled: !!session?.user,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
