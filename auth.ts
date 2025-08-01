@@ -8,21 +8,26 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
   callbacks: {
     async jwt({ token, account, profile }) {
-      if (account && profile && typeof profile === "object" && "login" in profile) {
+      if (
+        account &&
+        profile &&
+        typeof profile === "object" &&
+        "login" in profile
+      ) {
         const githubProfile = profile as {
           login: string;
           name: string;
           email: string;
           avatar_url: string;
         };
-    
+
         token.accessToken = account.access_token!;
         token.githubLogin = githubProfile.login;
         token.userName = githubProfile.name;
         token.userEmail = githubProfile.email;
         token.userImage = githubProfile.avatar_url;
       }
-    
+
       return token;
     },
     async session({ session, token }) {

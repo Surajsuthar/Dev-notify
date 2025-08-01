@@ -6,70 +6,74 @@ import { QueryProvider } from "@/components/providers/query-provider";
 import { PostHogProvider } from "@/components/providers/posthog-provider";
 
 export const metadata: Metadata = {
-  title: "DevNotify - Track GitHub Stars & Issues for Open Source Contributions",
-  description: "Open source platform to track your starred GitHub repositories and issues. Stay updated on project changes and find contribution opportunities easily.",
-  
+  title:
+    "DevNotify - Track GitHub Stars & Issues for Open Source Contributions",
+  description:
+    "Open source platform to track your starred GitHub repositories and issues. Stay updated on project changes and find contribution opportunities easily.",
+
   keywords: [
     "GitHub tracker",
-    "open source contributions", 
+    "open source contributions",
     "repository monitoring",
     "issue tracker",
     "developer tools",
     "GitHub stars",
     "project tracking",
-    "contribution finder"
+    "contribution finder",
   ],
-  
+
   authors: [{ name: "Suraj" }],
   creator: "Suraj",
   publisher: "Suraj",
-  
+
   robots: {
-    index: true,       
-    follow: true,     
+    index: true,
+    follow: true,
     googleBot: {
       index: true,
       follow: true,
-      "max-video-preview": -1,      
+      "max-video-preview": -1,
       "max-image-preview": "large",
-      "max-snippet": -1,      
+      "max-snippet": -1,
     },
   },
-  
+
   openGraph: {
     type: "website",
     locale: "en_US",
     url: "https://devnotify.in/",
     siteName: "DevNotify",
-    title: "DevNotify - Track GitHub Stars & Issues for Open Source Contributions",
-    description: "Open source platform to track your starred GitHub repositories and issues. Stay updated on project changes and find contribution opportunities easily.",
+    title:
+      "DevNotify - Track GitHub Stars & Issues for Open Source Contributions",
+    description:
+      "Open source platform to track your starred GitHub repositories and issues. Stay updated on project changes and find contribution opportunities easily.",
     images: [
       {
-        url: "/landing.png",  
-        width: 1200,      
+        url: "/landing.png",
+        width: 1200,
         height: 630,
         alt: "DevNotify - GitHub Repository & Issue Tracker",
       },
     ],
   },
-  
+
   twitter: {
-    card: "summary_large_image", 
+    card: "summary_large_image",
     title: "DevNotify - Track GitHub Stars & Issues",
-    description: "Open source platform to track your starred GitHub repositories and issues for better contribution tracking.",
+    description:
+      "Open source platform to track your starred GitHub repositories and issues for better contribution tracking.",
     images: ["/landing.png"],
-    creator: "@Suraj_0067",  
+    creator: "@Suraj_0067",
   },
-  
+
   metadataBase: new URL("https://devnotify.in/"),
 
   alternates: {
     canonical: "/",
   },
-  
+
   category: "Developer Tools",
   classification: "Open Source Software",
-
 };
 
 export default function RootLayout({
@@ -80,9 +84,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />         
+        <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />      
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="theme-color" content="#000000" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>

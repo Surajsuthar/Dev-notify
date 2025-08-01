@@ -24,11 +24,14 @@ import {
 import { RepoDataTableType } from "@/types";
 
 export const AllRepo = () => {
-
   const [searchTerm, setSearchTerm] = useState("");
   const [languageFilter, setLanguageFilter] = useState("all");
 
-  const { data: userRepos, isLoading, isError } = useQuery({
+  const {
+    data: userRepos,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["userRepos"],
     queryFn: () => getStarredReposForUser(),
   });
@@ -65,7 +68,6 @@ export const AllRepo = () => {
       return matchesSearch && matchesLanguage;
     });
   }, [repos, searchTerm, languageFilter]);
-
 
   if (isError) {
     return (

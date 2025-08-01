@@ -105,7 +105,7 @@ export const Dashboard = () => {
               <div className="flex items-center space-x-6 justify-end py-2 rounded-lg">
                 <div className="flex flex-col gap-2 items-end ">
                   <Avatar className="w-12 h-12">
-                    <AvatarImage src={(session?.user)?.image || ""} />
+                    <AvatarImage src={session?.user?.image || ""} />
                     <AvatarFallback>
                       {session?.user.name?.charAt(0) || "U"}
                     </AvatarFallback>

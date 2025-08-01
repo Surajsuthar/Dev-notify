@@ -25,7 +25,7 @@ import {
   AlertCircle,
   Activity,
 } from "lucide-react";
-import  { User } from "next-auth";
+import { User } from "next-auth";
 
 interface GitHubStats {
   publicRepos: number;

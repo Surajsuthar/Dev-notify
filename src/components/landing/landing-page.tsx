@@ -19,7 +19,6 @@ export const LandingPage = () => {
 
   return (
     <main className="w-full relative max-w-[1100px] mx-auto min-h-screen pt-[var(--header-height)]">
-      
       <header className="fixed top-4 left-4 right-4 sm:left-0 sm:right-0 z-50">
         <div className="max-w-6xl mx-auto backdrop-blur-lg border shadow-xl rounded-none py-2 px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-10 md:h-16">

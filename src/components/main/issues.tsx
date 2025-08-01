@@ -68,15 +68,15 @@ export const Issues = () => {
   }, [userIssues]);
 
   const labels = useMemo(() => {
-    return [...new Set(mockIssues.flatMap((issue) => issue.labels))].sort();;
+    return [...new Set(mockIssues.flatMap((issue) => issue.labels))].sort();
   }, [mockIssues]);
 
   const language = useMemo(() => {
-    return [...new Set(mockIssues.map((issues) => issues.language))].sort();;
+    return [...new Set(mockIssues.map((issues) => issues.language))].sort();
   }, [mockIssues]);
 
   const allRepo = useMemo(() => {
-    return [...new Set(mockIssues.map((issues) => issues.owner))].sort();;
+    return [...new Set(mockIssues.map((issues) => issues.owner))].sort();
   }, [mockIssues]);
 
   const filteredIssues = useMemo(() => {
@@ -84,19 +84,19 @@ export const Issues = () => {
       const matchesSearch =
         issue.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         issue.owner.toLowerCase().includes(searchTerm.toLowerCase());
-  
+
       const matchesStatus =
         statusFilter === "all" || issue.language === statusFilter;
-  
+
       const matchesLabel =
         labelFilter === "all" || issue.labels?.includes(labelFilter);
-  
+
       const matchesAssignee =
         assigneeFilter === "all" ||
         issue.assigned === (assigneeFilter === "true");
-  
+
       const matchRepo = repoFilter === "all" || issue.owner === repoFilter;
-  
+
       return (
         matchesSearch &&
         matchesStatus &&
@@ -105,8 +105,15 @@ export const Issues = () => {
         matchRepo
       );
     });
-  }, [mockIssues, searchTerm, statusFilter, labelFilter, assigneeFilter, repoFilter]);
-  
+  }, [
+    mockIssues,
+    searchTerm,
+    statusFilter,
+    labelFilter,
+    assigneeFilter,
+    repoFilter,
+  ]);
+
   if (isError) {
     return (
       <div className="flex items-center justify-center h-64">

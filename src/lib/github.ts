@@ -93,7 +93,7 @@ export class GitHubService {
       });
       return data.fork;
     } catch (error) {
-      console.log("error",error)
+      console.log("error", error);
       return false;
     }
   }
