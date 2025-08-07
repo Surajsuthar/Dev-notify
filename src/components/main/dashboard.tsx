@@ -74,7 +74,7 @@ export const Dashboard = () => {
       <div className="sticky border top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
         <div className="p-4">
           <div className="flex justify-between w-full">
-            <div className="flex flex-col space-y-6  w-full md:w-1/3">
+            <div className="flex flex-col space-y-6  w-full md:w-3/5">
               <Tabs
                 value={activeTab}
                 onValueChange={setActiveTab}
@@ -143,7 +143,7 @@ export const Dashboard = () => {
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-y-hidden">
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}

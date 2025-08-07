@@ -238,8 +238,6 @@ export const getAllIssuesFromGithub = reactCache(async () => {
     };
   }
 
-  const user = await getUser(session.user.email);
-
   const githubClient = await getGithubService();
   if (!githubClient) {
     return {
@@ -247,15 +245,6 @@ export const getAllIssuesFromGithub = reactCache(async () => {
       message: "Github client not found",
     };
   }
-
-  const allRepos = await db.userRepo.findMany({
-    where: {
-      userId: user?.id,
-    },
-    select: {
-      repo: true,
-    },
-  });
 
   const userRepo = await getReposFromGithub();
 
@@ -315,3 +304,58 @@ export const getAllIssuesFromGithub = reactCache(async () => {
     message: "No repositories found",
   };
 });
+
+export const getUserRecommandedRepo = async (language: string) => {
+  try {
+    const session = await auth();
+
+    if (!session?.user) {
+      return {
+        success: false,
+        message: "User not found",
+      };
+    }
+
+    const user = await getUser(session.user.email);
+
+    const githubClient = await getGithubService();
+    if (!githubClient) {
+      return {
+        success: false,
+        message: "Github client not found",
+      };
+    }
+
+    const allRepos = await db.userRepo.findMany({
+      where: {
+        userId: {
+          not: user?.id,
+        },
+        repo: {
+          language: language
+        }
+      },
+      select: {
+        repo: true
+      },
+    });
+
+    if (!allRepos) {
+      return {
+        status: false,
+        data: [],
+      };
+    }
+
+    return {
+      status: true,
+      data: allRepos.map((repo) => repo.repo),
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: "Error fetching repositories",
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+};
