@@ -127,6 +127,22 @@ export const UserRecommendation = () => {
               </div>
             </div>
 
+            <div className="space-y-3">
+              <Label>Topics</Label>
+              <div className="flex flex-wrap gap-2">
+                {availableLabels.map((label) => (
+                  <Badge
+                    key={label}
+                    variant={selectedLabels.includes(label) ? "default" : "secondary"}
+                    className="cursor-pointer hover:bg-primary/80 transition-colors"
+                    onClick={() => toggleLabel(label)}
+                  >
+                    {label}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+
             {/* Active Filters */}
             {(language !== "all" || selectedLabels.length > 0 || searchQuery) && (
               <div className="space-y-3">

@@ -216,4 +216,39 @@ export class GitHubService {
     const { data } = await this.octokit.rateLimit.get();
     return data;
   }
+
+  async searchRepoByLang(query: string, language?: string) {
+    try {
+      let q = query
+      if(language) {
+        q += ` language:${language}`;
+      }
+
+      const { data } = await this.octokit.search.repos({
+        q,
+        sort: "stars",
+        order: "desc"
+      })
+
+      return data
+    } catch (error) {
+      console.log("error",error)
+      return
+    }
+  }
+
+  async searchRepoByTopics(topic: string) {
+    try {
+      const { data } = await this.octokit.search.topics({
+        q: topic,
+        sort: "stars",
+        order: "desc"
+      })
+
+      return data
+    } catch (error) {
+      console.log("error",error)
+      return
+    }
+  }
 }

@@ -110,9 +110,9 @@ export const Dashboard = () => {
                       {session?.user.name?.charAt(0) || "U"}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex flex-col text-right gap-2">
-                    <h1 className="text-xl flex items-center gap-0.5 font-bold tracking-tight">
-                      <p>@{session?.user?.githubLogin}</p>
+                  <div className="flex flex-col gap-2">
+                    <h1 className="text-xl flex items-center justify-end gap-0.5 font-bold tracking-tight">
+                      <p>{session?.user?.name}</p>
                       <DropdownMenu>
                         <DropdownMenuTrigger>
                           <EllipsisVertical className="w-4 cursor-pointer h-4 ml-4" />

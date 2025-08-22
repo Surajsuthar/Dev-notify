@@ -7,66 +7,59 @@ const MAX_COOKIE_AGE = 8 * 60 * 60;
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
   callbacks: {
-    async jwt({ token, account, profile }) {
-      if (
-        account &&
-        profile &&
-        typeof profile === "object" &&
-        "login" in profile
-      ) {
-        const githubProfile = profile as {
-          login: string;
-          name: string;
-          email: string;
-          avatar_url: string;
-        };
-
+    async jwt({ token, account }) {
+      if (account) {
         token.accessToken = account.access_token!;
-        token.githubLogin = githubProfile.login;
-        token.userName = githubProfile.name;
-        token.userEmail = githubProfile.email;
-        token.userImage = githubProfile.avatar_url;
+        token.githubId = account.providerAccountId!;
+        token.githubLogin = account.githubLogin
       }
-
       return token;
     },
     async session({ session, token }) {
       if (session.user && token) {
-        session.user.githubLogin = token.githubLogin as string;
         session.user.accessToken = token.accessToken as string;
-        session.user.name = token.userName as string;
-        session.user.email = token.userEmail as string;
-        session.user.image = token.userImage as string;
+        session.user.githubId = token.githubId as string
+        session.user.githubLogin = token.githubLogin as string
       }
       return session;
     },
-    async signIn({ user, account }) {
-      if (account?.provider === "github" && user.email) {
+    async signIn({ user, account, profile }) {
+      if (account?.provider === "github" && profile) {
+        const githubId = account.providerAccountId;
+        const githubLogin = (profile as any).login;
+        const name = user.name ?? githubLogin;
+        const image = user.image ?? (profile as any).avatar_url;
         try {
           await db.user.upsert({
-            where: { email: user.email },
+            where: { githubId },
             update: {
-              githubId: account.providerAccountId,
-              name: user.name,
-              image: user.image,
+              githubLogin,
+              name,
+              image,
+              email: user.email ?? null,
             },
             create: {
-              name: user.name,
-              email: user.email,
-              image: user.image,
-              githubId: account.providerAccountId,
+              githubId,
+              name,
+              image,
+              email: user.email ?? null,
+              githubLogin
             },
           });
         } catch (error) {
           console.error("Database error during sign in:", error);
+          return false;
         }
       }
       return true;
-    },
+    }
   },
   session: {
     strategy: "jwt",
     maxAge: MAX_COOKIE_AGE,
+  },
+  pages: {
+    signIn: "/"
   },
   secret: process.env.AUTH_SECRET,
   debug: process.env.NODE_ENV === "development",

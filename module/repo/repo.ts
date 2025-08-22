@@ -79,7 +79,7 @@ export const getAllStarredReposFromGithub = reactCache(async () => {
       };
     }
 
-    const user = await getUser(session.user.email);
+    const user = await getUser(session.user.githubId);
 
     const githubClient = await getGithubService();
 
@@ -210,7 +210,9 @@ export const getStarredReposForUser = reactCache(async () => {
     };
   }
 
-  const user = await getUser(session.user.email);
+  console.log("session.user.githubId",session.user)
+
+  const user = await getUser(session.user.githubId);
 
   const userRepos = await db.userRepo.findMany({
     where: { userId: user?.id! },
@@ -316,7 +318,7 @@ export const getUserRecommandedRepo = async (language: string) => {
       };
     }
 
-    const user = await getUser(session.user.email);
+    const user = await getUser(session.user.githubId);
 
     const githubClient = await getGithubService();
     if (!githubClient) {
