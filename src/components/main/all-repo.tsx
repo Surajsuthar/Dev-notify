@@ -141,11 +141,8 @@ export const AllRepo = () => {
               {filteredRepos.length === 1 ? "repo" : "repos"}
             </Badge>
           </CardTitle>
-          <CardDescription>
-            Your starred repositories with GitHub data
-          </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="overflow-y-auto h-[500px]">
           {filteredRepos.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <span className="text-lg font-semibold mb-2">

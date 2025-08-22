@@ -3,21 +3,20 @@ import NextAuth from "next-auth";
 declare module "next-auth" {
   interface Session {
     user: {
-      name: string;
-      email: string;
-      image: string;
-      githubLogin: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
       accessToken: string;
+      githubId: string
+      githubLogin: string
     };
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
-    githubLogin: string;
     accessToken: string;
-    userName: string;
-    userEmail: string;
-    userImage: string;
+    githubId: string;
+    githubLogin: string
   }
 }

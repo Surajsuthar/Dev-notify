@@ -229,7 +229,7 @@ export const Issues = () => {
       </Card>
 
       {/* Issues Table */}
-      <Card className=" rounded-none">
+      <Card className="rounded-none">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>Tracked Issues</span>
@@ -238,11 +238,8 @@ export const Issues = () => {
               {filteredIssues.length === 1 ? "issue" : "issues"}
             </Badge>
           </CardTitle>
-          <CardDescription>
-            Issues from your starred repositories with real-time updates
-          </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="overflow-y-auto h-[500px]">
           {filteredIssues.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <AlertCircle className="w-12 h-12 text-muted-foreground mb-4" />

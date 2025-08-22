@@ -45,8 +45,8 @@ model User {
   email         String?    @unique
   image         String?
   githubId      String?    @unique
-  whatsappNumber String?   @unique
-  telegramUsername String? @unique
+  githubLogin   String?    
+  
   accounts      Account[]
   sessions      Session[]
   userRepos     UserRepo[]
