@@ -307,7 +307,7 @@ export const getAllIssuesFromGithub = reactCache(async () => {
   };
 });
 
-export const getUserRecommandedRepo = async (language: string) => {
+export const getUserRecommandedRepo = async () => {
   try {
     const session = await auth();
 
@@ -332,9 +332,6 @@ export const getUserRecommandedRepo = async (language: string) => {
       where: {
         userId: {
           not: user?.id,
-        },
-        repo: {
-          language: language
         }
       },
       select: {
@@ -344,20 +341,76 @@ export const getUserRecommandedRepo = async (language: string) => {
 
     if (!allRepos) {
       return {
-        status: false,
+        success: false,
         data: [],
       };
     }
 
     return {
-      status: true,
+      success: true,
       data: allRepos.map((repo) => repo.repo),
     };
+
   } catch (error) {
     return {
       success: false,
       message: "Error fetching repositories",
-      error: error instanceof Error ? error.message : String(error),
     };
   }
 };
+
+export const searchGithubRepos = reactCache(async (searchQuery: string) => {
+  try {
+    const session = await auth();
+    if (!session?.user) {
+      return {
+        success: false,
+        message: "User not found",
+      };
+    }
+
+    const githubClient = await getGithubService();
+    if (!githubClient) {
+      return {
+        success: false,
+        message: "Github client not found",
+      };
+    }
+
+    const searchResults = await githubClient.searchRepoByLang(searchQuery);
+    
+    if (!searchResults?.items) {
+      return {
+        success: false,
+        message: "No search results found",
+      };
+    }
+
+    const repos: Repo[] = searchResults.items.map((repo: any) => ({
+      github_id: String(repo.id),
+      node_id: repo.node_id,
+      name: repo.name,
+      owner: repo.owner.login,
+      description: repo.description || "",
+      full_name: repo.full_name,
+      github_url: repo.html_url,
+      topics: repo.topics || [],
+      language: repo.language || "",
+      homepage_url: repo.homepage || "",
+      stars: repo.stargazers_count,
+      issues: repo.open_issues_count,
+    }));
+
+    return {
+      success: true,
+      data: repos,
+    };
+
+  } catch (error) {
+    return {
+      success: false,
+      message: "Error searching repositories",
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+});

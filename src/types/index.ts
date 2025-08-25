@@ -53,3 +53,21 @@ export type RepoDataTableType = Omit<
 >;
 
 export type IssueDataTableType = Omit<IsuueDataTabel, "id" | "created_by">;
+
+export type repoRecommandation = 
+  | {
+    success: boolean,
+    data: {
+      id: number,
+      title: string,
+      description: string,
+      author: string,
+      stars: string,
+      language: string,
+      labels: string[],
+    }[]
+  | {
+    success: boolean,
+    message: string
+  }
+  }
