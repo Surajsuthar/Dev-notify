@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/prisma";
-import {  User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { cache as reactCache } from "react";
 
 export const getUser = reactCache(

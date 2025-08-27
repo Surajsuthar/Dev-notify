@@ -219,21 +219,21 @@ export class GitHubService {
 
   async searchRepoByLang(query: string, language?: string) {
     try {
-      let q = query
-      if(language) {
+      let q = query;
+      if (language) {
         q += ` language:${language}`;
       }
 
       const { data } = await this.octokit.search.repos({
         q,
         sort: "stars",
-        order: "desc"
-      })
+        order: "desc",
+      });
 
-      return data
+      return data;
     } catch (error) {
-      console.log("error",error)
-      return
+      console.log("error", error);
+      return;
     }
   }
 
@@ -242,13 +242,13 @@ export class GitHubService {
       const { data } = await this.octokit.search.topics({
         q: topic,
         sort: "stars",
-        order: "desc"
-      })
+        order: "desc",
+      });
 
-      return data
+      return data;
     } catch (error) {
-      console.log("error",error)
-      return
+      console.log("error", error);
+      return;
     }
   }
 }

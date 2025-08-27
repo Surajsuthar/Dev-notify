@@ -210,7 +210,7 @@ export const getStarredReposForUser = reactCache(async () => {
     };
   }
 
-  console.log("session.user.githubId",session.user)
+  console.log("session.user.githubId", session.user);
 
   const user = await getUser(session.user.githubId);
 
@@ -332,10 +332,10 @@ export const getUserRecommandedRepo = async () => {
       where: {
         userId: {
           not: user?.id,
-        }
+        },
       },
       select: {
-        repo: true
+        repo: true,
       },
     });
 
@@ -350,7 +350,6 @@ export const getUserRecommandedRepo = async () => {
       success: true,
       data: allRepos.map((repo) => repo.repo),
     };
-
   } catch (error) {
     return {
       success: false,
@@ -378,7 +377,7 @@ export const searchGithubRepos = reactCache(async (searchQuery: string) => {
     }
 
     const searchResults = await githubClient.searchRepoByLang(searchQuery);
-    
+
     if (!searchResults?.items) {
       return {
         success: false,
@@ -405,7 +404,6 @@ export const searchGithubRepos = reactCache(async (searchQuery: string) => {
       success: true,
       data: repos,
     };
-
   } catch (error) {
     return {
       success: false,

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { Github } from "lucide-react";
+import { BellIcon, CalendarIcon, FileTextIcon, Github } from "lucide-react";
 import { Button } from "../ui/button";
 import { WordRotate } from "../magicui/word-rotate";
 import { AnimatedGradientText } from "../magicui/animated-gradient-text";
@@ -9,6 +9,7 @@ import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useGithub } from "@/hooks/use-github-count";
+import { BentoCard, BentoGrid } from "../magicui/bento-grid";
 
 export const LandingPage = () => {
   const { stargazers_count } = useGithub();
@@ -16,6 +17,39 @@ export const LandingPage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const features = [
+    {
+      Icon: FileTextIcon,
+      name: "Repository Management",
+      description:
+        "Easily organize and monitor all your starred GitHub repositories in one centralized dashboard.",
+      href: "/",
+      background: <div className="absolute inset-0" />,
+      className:
+        "lg:col-start-1 lg:col-end-2 hover:scale-[1.02] transition-all duration-300",
+    },
+    {
+      Icon: BellIcon,
+      name: "Track Issues",
+      description:
+        "Track and stay updated on new issues across your repositories.",
+      href: "/",
+      background: <div className="absolute inset-0" />,
+      className:
+        "lg:col-start-2 lg:col-end-3 hover:scale-[1.02] transition-all duration-300",
+    },
+    {
+      Icon: CalendarIcon,
+      name: "User Recommendations",
+      description:
+        "Discover developers with shared interests and explore suggested repositories tailored to your activity.",
+      href: "/",
+      background: <div className="absolute inset-0" />,
+      className:
+        "lg:col-start-3 lg:col-end-4 hover:scale-[1.02] transition-all duration-300",
+    },
+  ];
 
   return (
     <main className="w-full relative max-w-[1100px] mx-auto min-h-screen pt-[var(--header-height)]">
@@ -100,7 +134,29 @@ export const LandingPage = () => {
         </div>
       </section>
 
-      <footer className="relative p-2 flex flex-col space-y-2.5 h-[200px] sm:h-[300px] px-4">
+      <section className="py-16 px-2 sm:px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+              Everything you need
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Powerful features to help you stay on top of your GitHub
+              repositories and never miss updates.
+            </p>
+          </div>
+
+          <div className="backdrop-blur-lg shadow-xl p-8">
+            <BentoGrid className="lg:grid-rows-1 gap-6">
+              {features.map((feature) => (
+                <BentoCard key={feature.name} {...feature} />
+              ))}
+            </BentoGrid>
+          </div>
+        </div>
+      </section>
+
+      <footer className="relative p-2 mt-20 flex flex-col space-y-2.5 h-[200px] sm:h-[300px] px-4">
         <div className="absolute bottom-0 right-0 text-[80px] sm:text-[120px] lg:text-[170px] bg-gradient-to-b from-white to-black bg-clip-text text-transparent font-extrabold opacity-10 leading-none">
           <span className="block sm:hidden">
             DEV
