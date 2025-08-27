@@ -11,15 +11,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (account) {
         token.accessToken = account.access_token!;
         token.githubId = account.providerAccountId!;
-        token.githubLogin = account.githubLogin
+        token.githubLogin = account.githubLogin;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user && token) {
         session.user.accessToken = token.accessToken as string;
-        session.user.githubId = token.githubId as string
-        session.user.githubLogin = token.githubLogin as string
+        session.user.githubId = token.githubId as string;
+        session.user.githubLogin = token.githubLogin as string;
       }
       return session;
     },
@@ -43,7 +43,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               name,
               image,
               email: user.email ?? null,
-              githubLogin
+              githubLogin,
             },
           });
         } catch (error) {
@@ -52,14 +52,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
       }
       return true;
-    }
+    },
   },
   session: {
     strategy: "jwt",
     maxAge: MAX_COOKIE_AGE,
   },
   pages: {
-    signIn: "/"
+    signIn: "/",
   },
   secret: process.env.AUTH_SECRET,
   debug: process.env.NODE_ENV === "development",

@@ -1,10 +1,23 @@
 import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Search, RefreshCw, Star, ExternalLink } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { searchGithubRepos } from "@/module/repo/repo";
@@ -15,27 +28,28 @@ export const UserRecommendation = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
 
-
   const toggleLabel = (label: string) => {
-    setSelectedLabels(prev => 
-      prev.includes(label) 
-        ? prev.filter(l => l !== label)
-        : [...prev, label]
+    setSelectedLabels((prev) =>
+      prev.includes(label) ? prev.filter((l) => l !== label) : [...prev, label],
     );
   };
 
-  const { data: recommendations, isError, isFetching } = useQuery({
-    queryKey: ['user-recommendation', language, selectedLabels],
+  const {
+    data: recommendations,
+    isError,
+    isFetching,
+  } = useQuery({
+    queryKey: ["user-recommendation", language, selectedLabels],
     queryFn: async () => {
       // Build search query based on filters
       let searchQuery = "stars:>100";
-      
+
       if (language !== "all") {
         searchQuery += ` language:${language}`;
       }
-      
+
       if (selectedLabels.length > 0) {
-        selectedLabels.forEach(label => {
+        selectedLabels.forEach((label) => {
           searchQuery += ` topic:${label}`;
         });
       }
@@ -54,15 +68,48 @@ export const UserRecommendation = () => {
   }, [recommendations]);
 
   const languages = [
-     "JavaScript", "TypeScript", "Python", "Java", "Go", "Rust", 
-    "C++", "C#", "PHP", "Ruby", "Swift", "Kotlin", "Scala", "R", 
-    "Dart", "Elixir", "Clojure", "Haskell", "Assembly"
+    "JavaScript",
+    "TypeScript",
+    "Python",
+    "Java",
+    "Go",
+    "Rust",
+    "C++",
+    "C#",
+    "PHP",
+    "Ruby",
+    "Swift",
+    "Kotlin",
+    "Scala",
+    "R",
+    "Dart",
+    "Elixir",
+    "Clojure",
+    "Haskell",
+    "Assembly",
+    "solidity",
   ];
 
   const availableLabels = [
-    "react", "nextjs", "vue", "angular", "nodejs", "docker", 
-    "kubernetes", "aws", "tailwind", "ai-agents", "llm", "machine-learning",
-    "blockchain", "mobile", "database", "api", "microservices"
+    "react",
+    "nextjs",
+    "vue",
+    "angular",
+    "nodejs",
+    "docker",
+    "kubernetes",
+    "aws",
+    "tailwind",
+    "ai-agents",
+    "llm",
+    "machine-learning",
+    "blockchain",
+    "mobile",
+    "database",
+    "api",
+    "microservices",
+    "web3",
+    "ai",
   ];
 
   const filteredRecommendations = useMemo(() => {
@@ -70,7 +117,9 @@ export const UserRecommendation = () => {
       const matchesSearch =
         searchQuery === "" ||
         item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (item.description || "").toLowerCase().includes(searchQuery.toLowerCase());
+        (item.description || "")
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
 
       return matchesSearch;
     });
@@ -82,7 +131,9 @@ export const UserRecommendation = () => {
         <div className="p-6 space-y-6">
           <div className="space-y-2">
             <h1 className="text-2xl font-bold tracking-tight">Discover</h1>
-            <p className="text-sm text-muted-foreground">Find amazing projects and developers</p>
+            <p className="text-sm text-muted-foreground">
+              Find amazing projects and developers
+            </p>
           </div>
 
           <div className="space-y-4">
@@ -123,7 +174,9 @@ export const UserRecommendation = () => {
                 {availableLabels.map((label) => (
                   <Badge
                     key={label}
-                    variant={selectedLabels.includes(label) ? "default" : "secondary"}
+                    variant={
+                      selectedLabels.includes(label) ? "default" : "secondary"
+                    }
                     className="cursor-pointer hover:bg-primary/80 transition-colors"
                     onClick={() => toggleLabel(label)}
                   >
@@ -134,12 +187,14 @@ export const UserRecommendation = () => {
             </div>
 
             {/* Active Filters */}
-            {(language !== "all" || selectedLabels.length > 0 || searchQuery) && (
+            {(language !== "all" ||
+              selectedLabels.length > 0 ||
+              searchQuery) && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <Label className="text-sm">Active Filters</Label>
-                  <Button 
-                    variant="ghost" 
+                  <Button
+                    variant="ghost"
                     size="sm"
                     onClick={() => {
                       setLanguage("all");
@@ -156,7 +211,7 @@ export const UserRecommendation = () => {
                       {language}
                     </Badge>
                   )}
-                  {selectedLabels.map(label => (
+                  {selectedLabels.map((label) => (
                     <Badge key={label} variant="outline" className="text-xs">
                       {label}
                     </Badge>
@@ -173,7 +228,9 @@ export const UserRecommendation = () => {
         <div className="p-6 space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">Recommended for You</h1>
+              <h1 className="text-3xl font-bold tracking-tight">
+                Recommended for You
+              </h1>
               <p className="text-muted-foreground mt-2">
                 Showing {filteredRecommendations.length} repositories
               </p>
@@ -204,7 +261,10 @@ export const UserRecommendation = () => {
           {!isFetching && !isError && (
             <div className="grid gap-6">
               {filteredRecommendations.map((item) => (
-                <Card key={item.node_id} className="hover:shadow-md transition-shadow">
+                <Card
+                  key={item.node_id}
+                  className="hover:shadow-md transition-shadow"
+                >
                   <CardHeader className="">
                     <div className="flex items-start justify-between">
                       <div className="space-y-1 flex-1">
@@ -216,21 +276,29 @@ export const UserRecommendation = () => {
                         </CardDescription>
                       </div>
                       <Button asChild variant="ghost" size="sm">
-                        <a href={item.github_url} target="_blank" rel="noreferrer">
+                        <a
+                          href={item.github_url}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
                           <ExternalLink className="h-4 w-4" />
                         </a>
                       </Button>
                     </div>
                   </CardHeader>
-                  
+
                   <CardContent className="space-y-2">
                     <p className="text-sm leading-relaxed">
                       {item.description}
                     </p>
-                    
+
                     <div className="flex flex-wrap gap-2">
                       {(item.topics || []).map((label) => (
-                        <Badge key={label} variant="secondary" className="text-xs">
+                        <Badge
+                          key={label}
+                          variant="secondary"
+                          className="text-xs"
+                        >
                           {label}
                         </Badge>
                       ))}
@@ -244,7 +312,10 @@ export const UserRecommendation = () => {
                           <Star className="h-4 w-4 fill-current text-yellow-500" />
                           <span>{Number(item.stars).toLocaleString()}</span>
                         </div>
-                        <Badge variant="outline" className="text-xs bg-blue-400/80">
+                        <Badge
+                          variant="outline"
+                          className="text-xs bg-blue-400/80"
+                        >
                           {item.language}
                         </Badge>
                       </div>
@@ -259,7 +330,9 @@ export const UserRecommendation = () => {
             <div className="text-center py-12">
               <div className="text-muted-foreground">
                 <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <h3 className="text-lg font-semibold mb-2">No projects found</h3>
+                <h3 className="text-lg font-semibold mb-2">
+                  No projects found
+                </h3>
                 <p>Try adjusting your filters or search terms</p>
               </div>
             </div>
