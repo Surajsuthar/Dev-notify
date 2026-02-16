@@ -4,6 +4,7 @@ import { AuthProvider } from "@/components/providers/session-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { PostHogProvider } from "@/components/providers/posthog-provider";
+import { Analytics } from "@vercel/analytics/next"
 
 export const metadata: Metadata = {
   title:
@@ -96,6 +97,7 @@ export default function RootLayout({
             <AuthProvider>{children}</AuthProvider>
           </QueryProvider>
           <Toaster />
+          <Analytics/>
         </PostHogProvider>
       </body>
     </html>
