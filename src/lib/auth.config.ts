@@ -13,4 +13,29 @@ export default {
 			},
 		}),
 	],
+	session: {
+		strategy: "jwt",
+		maxAge: 8 * 60 * 60,
+	},
+	pages: {
+		signIn: "/",
+	},
+	callbacks: {
+		async jwt({ token, account, profile }) {
+			if (account) {
+				token.accessToken = account.access_token!;
+				token.githubId = account.providerAccountId!;
+				token.githubLogin = (profile as any)?.login;
+			}
+			return token;
+		},
+		async session({ session, token }) {
+			if (session.user && token) {
+				session.user.accessToken = token.accessToken as string;
+				session.user.githubId = token.githubId as string;
+				session.user.githubLogin = token.githubLogin as string;
+			}
+			return session;
+		},
+	},
 } satisfies NextAuthConfig;
