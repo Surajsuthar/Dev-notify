@@ -1,17 +1,17 @@
 export type Repo = {
-  github_id: string;
-  node_id: string;
-  name: string;
-  owner: string;
-  description: string;
-  full_name: string;
-  github_url: string;
-  homepage_url: string;
-  stars: number;
-  language: string;
-  topics: string[];
-  issues: number;
-};
+		github_id: string;
+		node_id: string;
+		name: string;
+		owner: string;
+		description: string | null;
+		full_name: string;
+		github_url: string;
+		homepage_url: string | null;
+		stars: number;
+		language: string;
+		topics: string[] | null;
+		issues: number;
+	};
 
 export type GetReposResponse =
   | {
